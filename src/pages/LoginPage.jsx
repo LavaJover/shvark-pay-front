@@ -1,25 +1,28 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { loginUser } from "../api/auth"
+import { useAuth } from "../auth/AuthContext"
 
 const LoginPage = () => {
-    const [login, setLogin] = useState('')
+    const [userLogin, setLogin] = useState('')
     const [password, setPassword] = useState('')
     const [error, setError] = useState('')
     const navigate = useNavigate()
+    const { login } = useAuth();
 
     const handleSubmit = async (e) => {
-        e.preventDefault()
-        setError('')
+      e.preventDefault();
+      setError('');
+  
+      try {
+        const token = await loginUser({ userLogin, password });
+        login(token); // сохраняем через контекст
+        navigate('/');
+      } catch (err) {
+        setError(err.message);
+      }
+    };
 
-        try {
-           const token = await loginUser({ login, password })
-           localStorage.setItem('token', token)
-           navigate('/')
-        } catch (err) {
-            setError(err.message)
-        }
-    }
 
     return (
         <form onSubmit={handleSubmit} style={{ maxWidth: 300, margin: '2rem auto' }}>
@@ -28,7 +31,7 @@ const LoginPage = () => {
         <input
           type="text"
           placeholder="Логин"
-          value={login}
+          value={userLogin}
           onChange={(e) => setLogin(e.target.value)}
           required
         />

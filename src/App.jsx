@@ -8,12 +8,15 @@ import OrdersPage from './pages/OrdersPage';
 import BankDetailsPage from './pages/BankDetailsPage';
 import StatPage from './pages/StatPage';
 import LoginPage from './pages/LoginPage';
+import { AuthProvider } from './auth/AuthContext';
+import PrivateRoute from './auth/PrivateRoute';
 
 
 function App() {
   return (
-    <Routes>
-      <Route path="/" element={<AppLayout/>}>
+    <AuthProvider>
+      <Routes>
+      <Route path="/" element={<PrivateRoute><AppLayout/></PrivateRoute>}>
         <Route index element={<HomePage/>}/>
         <Route path="history" element={<HistoryPage/>}/>
         <Route path="settings" element={<SettingsPage/>}/>
@@ -23,6 +26,7 @@ function App() {
       </Route>
       <Route path="/login" element={<LoginPage/>}/>
     </Routes>
+    </AuthProvider>
   );
 }
 
