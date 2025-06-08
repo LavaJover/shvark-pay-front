@@ -1,12 +1,25 @@
+import { useAuth } from '../auth/AuthContext';
+import { useWalletBalance } from "../hooks/useWalletBalance";
+
 const TraderInfo = () => {
+    const { isInitialized } = useAuth();
+    const { balance, loading, error } = useWalletBalance(10000, isInitialized);
+
+    if (!isInitialized) return <div>Загрузка...</div>;
+
+    if (loading) return <div>Загрузка баланса...</div>;
+    if (error) return <div>Ошибка загрузки баланса</div>;
+
+    // Защита от null, если баланс еще не пришел
+    const { address, currency, balance: amount, frozen } = balance || {};
+
     return (
         <article className="trader-info">
             <div className="trader-wallet">
                 <div className="wallet-info">
-                    <p><b>Адрес: </b> tb1qaw0ch8er0erpzsk067aedfe2pu9ea43n57ul00</p>
-                    <p><b>Баланс:</b> 0.0001 BTC</p>
-                    <p><b>Страховой лимит:</b> 0.02 BTC</p>
-                    <p><b>Заморожено:</b> 0.00001</p>
+                    <p><b>Адрес: </b> {address ?? '—'}</p>
+                    <p><b>Баланс:</b> {amount ?? '—'} {currency ?? '—'}</p>
+                    <p><b>Заморожено:</b> {frozen ?? '—'} {currency ?? '—'}</p>
                 </div>
                 <div className="wallet-control">
                     <button className="wallet-button">История</button>
@@ -15,7 +28,7 @@ const TraderInfo = () => {
                 </div>
             </div>
         </article>
-    )
-}
+    );
+};
 
-export default TraderInfo
+export default TraderInfo;

@@ -1,9 +1,7 @@
-
-
 const BankDetailsPage = () => {
     return (
         <>
-        <h1>Реквизиты</h1>
+        <p>Реквизиты</p>
         </>
     )
 }

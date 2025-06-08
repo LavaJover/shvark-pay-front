@@ -68,3 +68,19 @@ header {
     margin-left: 20px;
     position: relative;
 }
+
+.logout-button {
+    border: none;
+    padding: 10px;
+    border-radius: 10%;
+    position: relative;
+    left: 20%;
+    color: black;
+    font-weight: bold;
+}
+
+.logout-button:hover {
+    background-color: red;
+    color: white;
+    transition-duration: 0.5s;
+}
