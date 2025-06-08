@@ -1,15 +1,8 @@
 import {Outlet, Link, useNavigate} from 'react-router-dom'
-import { useAuth } from '../auth/AuthContext'
 
 const AppLayout = () => {
 
-    const {logout} = useAuth()
     const navigate = useNavigate()
-
-    const handleLogout = () => {
-        logout();
-        navigate('/login');
-      };
 
     return (
         <>
@@ -21,7 +14,7 @@ const AppLayout = () => {
                 <Link to="/history" className='nav-link'>История операций</Link>
                 <Link to="/stats" className='nav-link'>Статистика</Link>
                 <Link to="/settings" className='nav-link'>Настройки</Link>
-                <button className='logout-button' onClick={handleLogout}>Выйти</button>
+                <button className='logout-button' onClick={()=>{}}>Выйти</button>
             </nav>
         </header>
         <main>

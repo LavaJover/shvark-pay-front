@@ -1,47 +1,45 @@
-import axios from 'axios';
-import { toast } from 'react-toastify';
-import { loadingManager } from '../utils/loadingManager';
+import axios from 'axios'
+import {toast} from 'react-toastify'
+
+const getToken = () => localStorage.getItem('token')
 
 const api = axios.create({
-  //baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3000/api',
-  headers: { 'Content-Type': 'application/json' },
-});
+    baseURL: 'http://localhost:8080/api/v1',
+    headers: {
+        'Content-Type': 'application/json'
+    }
+})
 
-api.interceptors.request.use((config) => {
-  loadingManager.start();
-
-  const token = localStorage.getItem('token');
-  if (token) config.headers.Authorization = `Bearer ${token}`;
-  return config;
-}, (error) => {
-  loadingManager.stop();
-  toast.error('Ошибка запроса');
-  return Promise.reject(error);
-});
+api.interceptors.request.use(
+    (config) => {
+        const token = getToken()
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`
+        }
+        return config
+    },
+    (error) => Promise.reject(error)
+)
 
 api.interceptors.response.use(
-  (res) => {
-    loadingManager.stop();
-    return res;
-  },
-  (error) => {
-    loadingManager.stop();
+    (response) => response,
+    (error) => {
+        if (error.response) {
+            const {status, data} = error.response
 
-    if (error.response) {
-      const { status, data } = error.response;
-      if (status === 401) {
-        toast.warn('Сессия истекла. Войдите снова.');
-        localStorage.removeItem('token');
-        window.location.href = '/login';
-      } else {
-        toast.error(data?.message || 'Произошла ошибка');
-      }
-    } else {
-      toast.error('Сервер недоступен');
+            if (status == 401){
+                toast.error('Сессия истекла. Пожалуйста, войдите снова.')
+            }else if (status >= 500) {
+                toast.error('Ошибка сервера. Попробуйте позже')
+            }else if (status >= 400) {
+                toast.error(data.message || 'Ошибка запроса')
+            }
+        }else {
+            toast.error('Ошибка сети. Проверьте подключение')
+        }
+
+        return Promise.reject(error)
     }
+)
 
-    return Promise.reject(error);
-  }
-);
-
-export default api;
+export default api
