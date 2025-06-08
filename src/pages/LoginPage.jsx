@@ -21,8 +21,7 @@ const LoginPage = () => {
         }
         try {
             const data = await loginUser({login: userLogin, password: userPassword})
-            console.log('before navigate')
-            login()
+            login(data.access_token)
             navigate('/')
         }catch (err) {
         

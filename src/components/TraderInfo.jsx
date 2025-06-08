@@ -1,9 +1,13 @@
+import { useAuth } from "../contexts/AuthContext";
 
 
 const TraderInfo = () => {
 
+    const {traderID} = useAuth()
+
     return (
         <article className="trader-info">
+            <p>ID: {traderID}</p>
             <div className="trader-wallet">
                 <div className="wallet-info">
                     <p><b>Адрес: </b> Адрес </p>

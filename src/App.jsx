@@ -27,7 +27,7 @@ function App() {
       </Route>
       <Route path="/login" element={<LoginPage/>}/>
       </Routes>
-      <ToastContainer position='top-right' autoClose={3000}/>
+      <ToastContainer position='bottom-right' autoClose={3000}/>
       </AuthProvider>
       </>
   );

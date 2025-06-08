@@ -10,14 +10,6 @@ export const loginUser = async ({login, password}) => {
         })
         toast.success('Успешный вход!')
         
-        // extracting tokens from successful server response
-        const accessToken = response.data.access_token
-        const refreshToken = response.data.refresh_token
-
-        localStorage.setItem('token', accessToken)
-
-
-
         return response.data
 
     }catch (err) {
@@ -27,14 +19,17 @@ export const loginUser = async ({login, password}) => {
             // server responded with error
             console.log('Ошибка на сервере: ', err.response.status, err.response.data)
             toast.error(`Ошибка входа`)
+            throw new Error('Failed to login')
         }else if (err.request) {
             // request sended but no response
             console.log('Сервер не отвечает')
             toast.error(`Нет ответа от сервера`)
+            throw new Error('server unavailable')
         }else {
             // error in request settings 
             console.log('Ошибка в настройке запроса: ', err.message)
-            // toast.error('Ошибка запроса: '+ err.message)
+            toast.error('Ошибка запроса: '+ err.message)
+            throw new Error('invalid axios set-up')
         }
     }
 }
