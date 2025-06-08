@@ -1,5 +1,6 @@
 import axios from 'axios'
 import {toast} from 'react-toastify'
+import { useAuth } from '../contexts/AuthContext'
 
 const getToken = () => localStorage.getItem('token')
 
@@ -21,25 +22,25 @@ api.interceptors.request.use(
     (error) => Promise.reject(error)
 )
 
-// api.interceptors.response.use(
-//     (response) => response,
-//     (error) => {
-//         if (error.response) {
-//             const {status, data} = error.response
+api.interceptors.response.use(
+    (response) => response,
+    (error) => {
+        if (error.response) {
+            const {status, data} = error.response
 
-//             if (status == 401){
-//                 toast.error('Сессия истекла. Пожалуйста, войдите снова.')
-//             }else if (status >= 500) {
-//                 toast.error('Ошибка сервера. Попробуйте позже')
-//             }else if (status >= 400) {
-//                 toast.error(data.message || 'Ошибка запроса')
-//             }
-//         }else {
-//             toast.error('Ошибка сети. Проверьте подключение')
-//         }
+            if (status == 401){
+                toast.error('Сессия истекла. Пожалуйста, войдите снова.')
+            }else if (status >= 500) {
+                toast.error('Ошибка сервера. Попробуйте позже')
+            }else if (status >= 400) {
+                toast.error(data.message || 'Ошибка запроса')
+            }
+        }else {
+            toast.error('Ошибка сети. Проверьте подключение')
+        }
 
-//         return Promise.reject(error)
-//     }
-// )
+        return Promise.reject(error)
+    }
+)
 
 export default api
