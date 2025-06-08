@@ -1,8 +1,16 @@
 import {Outlet, Link, useNavigate} from 'react-router-dom'
+import { useAuth } from '../contexts/AuthContext'
+import { toast } from 'react-toastify'
 
 const AppLayout = () => {
-
+    const {logout} = useAuth()
     const navigate = useNavigate()
+
+    const handleLogout = () => {
+        logout()
+        toast.success('Выход из аккаунта')
+        navigate('/login')
+    }
 
     return (
         <>
@@ -14,7 +22,7 @@ const AppLayout = () => {
                 <Link to="/history" className='nav-link'>История операций</Link>
                 <Link to="/stats" className='nav-link'>Статистика</Link>
                 <Link to="/settings" className='nav-link'>Настройки</Link>
-                <button className='logout-button' onClick={()=>{}}>Выйти</button>
+                <button className='logout-button' onClick={handleLogout}>Выйти</button>
             </nav>
         </header>
         <main>

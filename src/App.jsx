@@ -8,13 +8,16 @@ import OrdersPage from './pages/OrdersPage';
 import StatPage from './pages/StatPage';
 import LoginPage from './pages/LoginPage';
 import BankDetailsPage from './pages/BankDetailsPage';
-
+import { ToastContainer } from 'react-toastify';
+import { AuthProvider } from './contexts/AuthContext';
+import PrivateRoute from './auth/PrivateRoute';
 
 function App() {
   return (
       <>
+      <AuthProvider>
       <Routes>
-      <Route path="/" element={<AppLayout/>}>
+      <Route path="/" element={<PrivateRoute> <AppLayout/> </PrivateRoute>}>
         <Route index element={<HomePage/>}/>
         <Route path="history" element={<HistoryPage/>}/>
         <Route path="settings" element={<SettingsPage/>}/>
@@ -24,6 +27,8 @@ function App() {
       </Route>
       <Route path="/login" element={<LoginPage/>}/>
       </Routes>
+      <ToastContainer position='top-right' autoClose={3000}/>
+      </AuthProvider>
       </>
   );
 }
