@@ -1,29 +1,32 @@
 import { useState, useEffect } from "react"
 import { useAuth } from "../contexts/AuthContext"
-import { createBankDetail } from "../api/banking"
+import { createBankDetail, updateBankDetail } from "../api/banking"
 
 const russianBanks = ['Sberbank', 'Tinkoff', 'Alfabank', 'Gazprom']
 const tajikBanks = ['Spitamen', 'Eskhata', 'IBT', 'IMON']
 
-const AddBankDetailsModal = ({isOpen, onClose, onSuccess}) => {
+const EditbankDetailsModal = ({isOpen, onClose, onSuccess, detail}) => {
+
+    if (!isOpen) return null
 
     const {traderID} = useAuth()
 
     const [form, setForm] = useState({
-        trader_id: traderID,
-        currency: '',
-        payment_system: '',
-        bank_name: '',
-        card_number: '',
-        phone: '',
-        owner: '',
-        min_amount: 0,
-        max_amount: 0,
-        max_amount_day: 0,
-        max_amount_month: 0,
-        max_orders_simultaneosly: 0,
-        delay: "0",
-        enabled: false
+        id: detail.id,
+        trader_id: detail.traderID,
+        currency: detail.currency,
+        payment_system: detail.payment_system,
+        bank_name: detail.bank_name,
+        card_number: detail.card_number,
+        phone: detail.phone,
+        owner: detail.owner,
+        min_amount: detail.min_amount,
+        max_amount: detail.max_amount,
+        max_amount_day: detail.max_amount_day,
+        max_amount_month: detail.max_amount_month,
+        max_orders_simultaneosly: detail.max_orders_simultaneosly,
+        delay: "0s",
+        enabled: detail.enabled
     })
 
     const [bankOptions, setBankOptions] = useState([])
@@ -51,19 +54,17 @@ const AddBankDetailsModal = ({isOpen, onClose, onSuccess}) => {
     const handleSubmit = async (e) => {
         e.preventDefault()
         async function sendData() {
-            const data = await createBankDetail(form)
+            const data = await updateBankDetail(form)
             onSuccess()
             onClose()
         }
         sendData()
     }
 
-    if (!isOpen) return null
-
     return (
         <div className="bank-modal">
             <div className="bank-modal-header">
-            <h2>Добавить реквизит</h2>
+            <h2>Редактировать реквизит</h2>
             </div>
             <div className="bank-modal-body">
             <form onSubmit={handleSubmit} className="bank-modal-form">
@@ -76,7 +77,7 @@ const AddBankDetailsModal = ({isOpen, onClose, onSuccess}) => {
                         value={form.currency}
                         onChange={handleOnChange}
                     >
-                        <option value="">Выберите валюту</option>
+                        <option value={form.currency}>{form.currency}</option>
                         <option value="RUB">RUB</option>
                         <option value="TJS">TJS</option>
                     </select>
@@ -91,7 +92,7 @@ const AddBankDetailsModal = ({isOpen, onClose, onSuccess}) => {
                         value={form.payment_system}
                         onChange={handleOnChange}
                     >
-                        <option value="">Выберите способ оплаты</option>
+                        <option value={form.payment_system}>{form.payment_system}</option>
                         <option value="SBP">SBP</option>
                         <option value="C2C">C2C</option>
                     </select>
@@ -108,7 +109,7 @@ const AddBankDetailsModal = ({isOpen, onClose, onSuccess}) => {
                         onChange={handleOnChange}
                         disabled={bankOptions.length === 0}
                     >
-                        <option value="">Выберите банк</option>
+                        <option value={form.bank_name}>{form.bank_name}</option>
                         {
                             bankOptions.map((bank) => (
                                 <option key={bank} value={bank}>{bank}</option>
@@ -123,8 +124,7 @@ const AddBankDetailsModal = ({isOpen, onClose, onSuccess}) => {
                         name="card_number"
                         id="card_number"
                         type="text"
-                        placeholder="Номер карты"
-                        value={form.card_number}
+                        value={detail.card_number}
                         onChange={handleOnChange}
                     />
                 </div>)}
@@ -236,4 +236,4 @@ const AddBankDetailsModal = ({isOpen, onClose, onSuccess}) => {
     )
 }
 
-export default AddBankDetailsModal
+export default EditbankDetailsModal

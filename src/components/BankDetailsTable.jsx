@@ -1,0 +1,129 @@
+import { useState } from "react"
+import { useTraderBankDetails } from "../hooks/useTraderBankDetails"
+import EditbankDetailsModal from "./EditBankDetailsModal"
+import { toast } from "react-toastify"
+
+const Requisite = ({bank_name, payment_system, card_number, phone, owner}) => {
+
+
+    if (card_number) return (
+        <div>
+            <p>{payment_system}</p>
+            <p>{bank_name}</p>
+            <p>{card_number}</p>
+            <p>{owner}</p>
+        </div>
+    )
+
+    if (phone) return (
+        <div>
+            <p>{payment_system}</p>
+            <p>{bank_name}</p>
+            <p>{phone}</p>
+            <p>{owner}</p>
+        </div>
+    )
+}
+
+const SumLimits = ({min_amount, max_amount, currency}) => {
+    return (
+        <div>
+            <p>От {min_amount} {currency}</p>
+            <p>До {max_amount} {currency}</p>
+        </div>
+    )
+} 
+
+const VolumeLimits = ({max_amount_day, max_amount_month, currency}) => {
+    return (
+        <div>
+            <p>В день: {max_amount_day} {currency}</p>
+            <p>В месяц: {max_amount_month} {currency}</p>
+        </div>
+    )
+}
+
+const QuantityLimits = () => {
+    return (
+        <div>
+
+        </div>
+    )
+}
+
+const BankDetailsTable = () => {
+
+    const {bankDetails, loading, error} = useTraderBankDetails()
+    const [showModal, setShowModal] = useState(false)
+    const [chosenDetail, setChoseonDetail] = useState(null)
+
+    const handleEdit = (detail) => {
+        setChoseonDetail(detail)
+        setShowModal(true)
+    }
+
+    return (
+        <>
+        <EditbankDetailsModal
+            isOpen={showModal}
+            onClose={()=>setShowModal(false)}
+            onSuccess={()=>{
+                toast.success('Изменения сохранены')
+                setShowModal(false)
+            }}
+            detail={chosenDetail}
+        />
+        <table>
+            <thead>
+                <tr>
+                    <th>Реквизиты</th>
+                    <th>Валюта</th>
+                    <th>Лимиты по суммам</th>
+                    <th>По объёму</th>
+                    <th>По количеству</th>
+                    <th>Одновременно</th>
+                    <th>Статус</th>
+                    <th></th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {
+                    bankDetails.map(detail => (
+                        <tr key={detail.id}>
+                            <td>
+                                <Requisite 
+                                    bank_name={detail.bank_name} 
+                                    card_number={detail.card_number}
+                                    payment_system={detail.payment_system}
+                                    phone={detail.phone}
+                                    owner={detail.owner}/>
+                            </td>
+                            <td>{detail.currency}</td>
+                            <td>
+                                <SumLimits 
+                                    min_amount={detail.min_amount}
+                                    max_amount={detail.max_amount}
+                                    currency={detail.currency}/>
+                            </td>
+                            <td>
+                                <VolumeLimits
+                                    max_amount_day={detail.max_amount_day}
+                                    max_amount_month={detail.max_amount_month}
+                                    currency={detail.currency}/>
+                            </td>
+                            <td>Количество</td>
+                            <td>{detail.max_orders_simultaneosly}</td>
+                            <td>{detail.enabled ? 'Включен': 'Выключен'}</td>
+                            <td><button onClick={() => handleEdit(detail)}>Редактировать</button></td>
+                            <td><button>Удалить</button></td>
+                        </tr>
+                    ))
+                }
+            </tbody>
+        </table>
+        </>
+    )
+}
+
+export default BankDetailsTable

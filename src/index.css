@@ -84,3 +84,109 @@ header {
     color: white;
     transition-duration: 0.5s;
 }
+/* Модальное окно под реквизиты */
+.bank-modal {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    left: 50%;
+    padding: 20px;
+    min-width: 500px;
+    min-height: 500px;
+}
+
+.bank-modal-form {
+    display: flex;
+    flex-direction: column;
+    padding: 3px;
+    
+}
+
+.bank-modal-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+  
+  .bank-modal-row label {
+    flex: 0 0 200px; /* фиксированная ширина метки */
+    font-weight: 500;
+  }
+  
+  .bank-modal-row input, select {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+  }
+  
+  /* Стилизация табличек */
+table {
+	width: 100%;
+	border: none;
+	margin-bottom: 20px;
+}
+table thead th {
+	font-weight: bold;
+	text-align: left;
+	border: none;
+	padding: 10px 15px;
+	background: #d8d8d8;
+	font-size: 14px;
+}
+table thead tr th:first-child {
+	border-radius: 8px 0 0 8px;
+}
+table thead tr th:last-child {
+	border-radius: 0 8px 8px 0;
+}
+table tbody td {
+	text-align: left;
+	border: none;
+	padding: 10px 15px;
+	font-size: 14px;
+	vertical-align: top;
+}
+table tbody tr:nth-child(even){
+	background: #f3f3f3;
+}
+table tbody tr td:first-child {
+	border-radius: 8px 0 0 8px;
+}
+table tbody tr td:last-child {
+	border-radius: 0 8px 8px 0;
+}
+
+/* Стилизация формы логина */
+
+.login-container {
+    position: relative;
+    left: 40%;
+    top: 100px;
+    width: 300px;
+    padding: 20px;
+}
+
+.login-form {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.login-form input {
+    padding: 5px;
+}
+
+.login-form button {
+    padding: 10px;
+    border: none;
+}
+
+.login-form button:hover {
+    background-color: rgb(10, 139, 10);
+    color: white;
+    border: none;
+    transition-duration: 0.5s;
+}
