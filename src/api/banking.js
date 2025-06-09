@@ -16,3 +16,20 @@ export const fetchTraderBankDetails = async ({traderID}) => {
         }
     }
 }
+
+export const createBankDetail = async (form) => {
+
+    try {
+        const response = await api.post('/banking/details', form)
+        console.log(response)
+        return response.data
+    }catch(err) {
+        if (err.response) {
+            // server responded with error
+        }else if (err.request) {
+            // server not responding
+        }else {
+            // invalid request
+        }
+    }
+}
