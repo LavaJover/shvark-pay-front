@@ -2,6 +2,7 @@ import { useState } from "react"
 import { useTraderBankDetails } from "../hooks/useTraderBankDetails"
 import EditbankDetailsModal from "./EditBankDetailsModal"
 import { toast } from "react-toastify"
+import { deleteBankDetail } from "../api/banking"
 
 const Requisite = ({bank_name, payment_system, card_number, phone, owner}) => {
 
@@ -43,10 +44,11 @@ const VolumeLimits = ({max_amount_day, max_amount_month, currency}) => {
     )
 }
 
-const QuantityLimits = () => {
+const QuantityLimits = ({max_quantity_day, max_quantity_month}) => {
     return (
         <div>
-
+            <p>Макс в день: {max_quantity_day}</p>
+            <p>Макс в месяц: {max_quantity_month}</p>
         </div>
     )
 }
@@ -60,6 +62,10 @@ const BankDetailsTable = () => {
     const handleEdit = (detail) => {
         setChoseonDetail(detail)
         setShowModal(true)
+    }
+
+    const handleDelete = async (bankDetailID) => {
+        const response = await deleteBankDetail({bankDetailID})
     }
 
     return (
@@ -112,11 +118,16 @@ const BankDetailsTable = () => {
                                     max_amount_month={detail.max_amount_month}
                                     currency={detail.currency}/>
                             </td>
-                            <td>Количество</td>
+                            <td>
+                                <QuantityLimits 
+                                    max_quantity_day={detail.max_quantity_day}
+                                    max_quantity_month={detail.max_quantity_month}
+                                />
+                            </td>
                             <td>{detail.max_orders_simultaneosly}</td>
                             <td>{detail.enabled ? 'Включен': 'Выключен'}</td>
                             <td><button onClick={() => handleEdit(detail)}>Редактировать</button></td>
-                            <td><button>Удалить</button></td>
+                            <td><button onClick={() => handleDelete(detail.id)}>Удалить</button></td>
                         </tr>
                     ))
                 }

@@ -190,3 +190,26 @@ table tbody tr td:last-child {
     border: none;
     transition-duration: 0.5s;
 }
+
+/* Orders */
+
+.orders-nav {
+    position: relative;
+    top: -10px;
+    padding: 10px;
+    background-color: white;
+    box-shadow: 5px 5px 5px rgb(170, 159, 159);
+}
+
+.orders-nav button {
+    border: none;
+    padding: 8px;
+    margin-right: 5%;
+    font-size: medium;
+    background-color: white;
+}
+
+.orders-nav button:hover {
+    background-color: rgb(235, 230, 230);
+    transition-duration: 0.5s;
+}

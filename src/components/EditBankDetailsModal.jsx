@@ -24,8 +24,10 @@ const EditbankDetailsModal = ({isOpen, onClose, onSuccess, detail}) => {
         max_amount: detail.max_amount,
         max_amount_day: detail.max_amount_day,
         max_amount_month: detail.max_amount_month,
+        max_quantity_day: detail.max_quantity_day,
+        max_quantity_month: detail.max_quantity_month,
         max_orders_simultaneosly: detail.max_orders_simultaneosly,
-        delay: "0s",
+        delay: detail.delay/60000,
         enabled: detail.enabled
     })
 
@@ -48,7 +50,11 @@ const EditbankDetailsModal = ({isOpen, onClose, onSuccess, detail}) => {
     }, [form.currency])
 
     const handleOnChange = (e) => {
-        setForm({...form, [e.target.name]: e.target.value})
+        const { name, type, value, checked } = e.target;
+        setForm({
+            ...form,
+            [name]: type === 'checkbox' ? checked : value
+        });
     }
 
     const handleSubmit = async (e) => {
@@ -205,6 +211,32 @@ const EditbankDetailsModal = ({isOpen, onClose, onSuccess, detail}) => {
                 </div>
 
                 <div className="bank-modal-row">
+                    <label htmlFor="max_quantity_day">Макс кол-во сделок (день)</label>
+                    <input
+                        name="max_quantity_day"
+                        id="max_quantity_day"
+                        type="number"
+                        min={0}
+                        max={100000000}
+                        value={form.max_quantity_day}
+                        onChange={handleOnChange}
+                    />
+                </div>
+
+                <div className="bank-modal-row">
+                    <label htmlFor="max_quantity_month">Макс кол-во сделок (месяц)</label>
+                    <input
+                        name="max_quantity_month"
+                        id="max_quantity_month"
+                        type="number"
+                        min={0}
+                        max={100000000}
+                        value={form.max_quantity_month}
+                        onChange={handleOnChange}
+                    />
+                </div>
+
+                <div className="bank-modal-row">
                     <label htmlFor="max_orders_simultaneosly">Сделок одновременно</label>
                     <input
                         name="max_orders_simultaneosly"
@@ -218,12 +250,25 @@ const EditbankDetailsModal = ({isOpen, onClose, onSuccess, detail}) => {
                 </div>
 
                 <div className="bank-modal-row">
+                    <label htmlFor="delay">Задержка между сделками(мин)</label>
+                    <input
+                        name="delay"
+                        id="delay"
+                        type="number"
+                        min={0}
+                        max={100000}
+                        value={form.delay}
+                        onChange={handleOnChange}
+                    />
+                </div>
+
+                <div className="bank-modal-row">
                     <label htmlFor="enabled">Активность</label>
                     <input
                         name="enabled"
                         id="enabled"
                         type="checkbox"
-                        value={form.enabled}
+                        checked={form.enabled}
                         onChange={handleOnChange}
                     />
                 </div>

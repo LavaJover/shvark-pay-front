@@ -21,8 +21,10 @@ const AddBankDetailsModal = ({isOpen, onClose, onSuccess}) => {
         max_amount: 0,
         max_amount_day: 0,
         max_amount_month: 0,
+        max_quantity_day: 0,
+        max_quantity_month: 0,
         max_orders_simultaneosly: 0,
-        delay: "0",
+        delay: 0,
         enabled: false
     })
 
@@ -45,7 +47,11 @@ const AddBankDetailsModal = ({isOpen, onClose, onSuccess}) => {
     }, [form.currency])
 
     const handleOnChange = (e) => {
-        setForm({...form, [e.target.name]: e.target.value})
+        const { name, type, value, checked } = e.target;
+        setForm({
+            ...form,
+            [name]: type === 'checkbox' ? checked : value
+        });
     }
 
     const handleSubmit = async (e) => {
@@ -205,6 +211,32 @@ const AddBankDetailsModal = ({isOpen, onClose, onSuccess}) => {
                 </div>
 
                 <div className="bank-modal-row">
+                    <label htmlFor="max_quantity_day">Макс кол-во сделок (день)</label>
+                    <input
+                        name="max_quantity_day"
+                        id="max_quantity_day"
+                        type="number"
+                        min={0}
+                        max={100000000}
+                        value={form.max_quantity_day}
+                        onChange={handleOnChange}
+                    />
+                </div>
+
+                <div className="bank-modal-row">
+                    <label htmlFor="max_quantity_month">Макс кол-во сделок (месяц)</label>
+                    <input
+                        name="max_quantity_month"
+                        id="max_quantity_month"
+                        type="number"
+                        min={0}
+                        max={100000000}
+                        value={form.max_quantity_month}
+                        onChange={handleOnChange}
+                    />
+                </div>
+
+                <div className="bank-modal-row">
                     <label htmlFor="max_orders_simultaneosly">Сделок одновременно</label>
                     <input
                         name="max_orders_simultaneosly"
@@ -218,12 +250,25 @@ const AddBankDetailsModal = ({isOpen, onClose, onSuccess}) => {
                 </div>
 
                 <div className="bank-modal-row">
+                    <label htmlFor="delay">Задержка между сделками(мин)</label>
+                    <input
+                        name="delay"
+                        id="delay"
+                        type="number"
+                        min={0}
+                        max={100000}
+                        value={form.delay}
+                        onChange={handleOnChange}
+                    />
+                </div>
+
+                <div className="bank-modal-row">
                     <label htmlFor="enabled">Активность</label>
                     <input
                         name="enabled"
                         id="enabled"
                         type="checkbox"
-                        value={form.enabled}
+                        checked={form.enabled}
                         onChange={handleOnChange}
                     />
                 </div>
