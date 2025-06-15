@@ -24,6 +24,8 @@ export const createBankDetail = async (form) => {
     form.max_amount_day = parseFloat(form.max_amount_day)
     form.max_amount_month = parseFloat(form.max_amount_month)
     form.max_orders_simultaneosly = parseFloat(form.max_orders_simultaneosly)
+    form.max_quantity_day = parseInt(form.max_quantity_day)
+    form.max_quantity_month = parseInt(form.max_quantity_month)
     form.enabled = (form.enabled === true)
     form.delay = form.delay*60+"s"
     try {

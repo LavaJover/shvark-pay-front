@@ -15,6 +15,7 @@ const EditbankDetailsModal = ({isOpen, onClose, onSuccess, detail}) => {
         id: detail.id,
         trader_id: detail.traderID,
         currency: detail.currency,
+        inflow_currency: detail.inflow_currency,
         payment_system: detail.payment_system,
         bank_name: detail.bank_name,
         card_number: detail.card_number,

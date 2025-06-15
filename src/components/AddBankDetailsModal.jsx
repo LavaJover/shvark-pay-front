@@ -4,6 +4,7 @@ import { createBankDetail } from "../api/banking"
 
 const russianBanks = ['Sberbank', 'Tinkoff', 'Alfabank', 'Gazprom']
 const tajikBanks = ['Spitamen', 'Eskhata', 'IBT', 'IMON']
+const abkhasianBanks = ['Amra', 'Aurora', 'Bank Abskasia']
 
 const AddBankDetailsModal = ({isOpen, onClose, onSuccess}) => {
 
@@ -12,6 +13,7 @@ const AddBankDetailsModal = ({isOpen, onClose, onSuccess}) => {
     const [form, setForm] = useState({
         trader_id: traderID,
         currency: '',
+        inflow_currency: '',
         payment_system: '',
         bank_name: '',
         card_number: '',
@@ -29,22 +31,99 @@ const AddBankDetailsModal = ({isOpen, onClose, onSuccess}) => {
     })
 
     const [bankOptions, setBankOptions] = useState([])
+    const [paymentSystemOptions, setPaymentSystemOptions] = useState([])
+    const [inflowCurrencyVisible, setInflowCurrencyVisible] = useState(false)
 
     useEffect(() => {
         switch (form.currency) {
             case 'RUB':
-                setBankOptions(russianBanks)
-                setForm(prev => ({ ...prev, bank_name: "" }));
+                setPaymentSystemOptions([
+                    {
+                        value: "SBP_RUS",
+                        name: "СБП"
+                    },
+                    {
+                        value: "C2C_RUS",
+                        name: "Перевод на карту"
+                    },
+                    {
+                        value: "TRANSGRAN",
+                        name: "Трансграничный перевод"
+                    }
+                ])
+                // setForm(prev => ({ ...prev, bank_name: "" }));
+                setForm(prev => ({...prev, payment_system: ""}))
                 break;
             case 'TJS':
-                setBankOptions(tajikBanks)
-                setForm(prev => ({ ...prev, bank_name: "" }));
+                setPaymentSystemOptions([
+                    {
+                        value: "C2C_TJK",
+                        name: "Перевод на карту"
+                    },
+                    {
+                        value: "ACCOUNT_NUMBER_TJK",
+                        name: "По номеру счёта"
+                    }
+                ])
+                // setBankOptions(tajikBanks)
+                // setForm(prev => ({ ...prev, bank_name: "" }));
+                setForm(prev => ({...prev, payment_system: ""}))
                 break;
             default:
-                setBankOptions([]);
-                setForm(prev => ({ ...prev, bank_name: "" }));
+                setPaymentSystemOptions([])
+                setForm(prev => ({...prev, payment_system: ""}))
+                // setBankOptions([])
+                // setForm(prev => ({ ...prev, bank_name: "" }));
+                break
         }
+        console.log(paymentSystemOptions)
     }, [form.currency])
+
+    useEffect(() => {
+        switch (form.payment_system) {
+            case 'TRANSGRAN':
+                setInflowCurrencyVisible(true)
+                setForm(prev => ({...prev, inflow_currency: ""}))
+                break
+            case 'C2C_RUS':
+                setForm(prev => ({...prev, inflow_currency: 'RUB'}))
+                setInflowCurrencyVisible(false)
+                break
+            case 'SBP_RUS':
+                setForm(prev => ({...prev, inflow_currency: 'RUB'}))
+                setInflowCurrencyVisible(false)
+                break
+            case 'C2C_TJK':
+                setForm(prev => ({...prev, inflow_currency: 'TJK'}))
+                setInflowCurrencyVisible(false)
+                break
+            default:
+                setForm(prev => ({...prev, inflow_currency: ''}))
+                setInflowCurrencyVisible(false)
+                break
+        }
+    }, [form.payment_system])
+
+    useEffect(() => {
+        switch (form.inflow_currency) {
+            case 'RUB':
+                if (form.payment_system == 'TRANSGRAN'){
+                    setBankOptions(abkhasianBanks)
+                }else{
+                    setBankOptions(russianBanks)
+                }
+                setForm(prev => ({...prev, bank_name: ""}))
+                break
+            case 'TJS':
+                setBankOptions(tajikBanks)
+                setForm(prev => ({...prev, bank_name: ""}))
+                break
+            default:
+                setBankOptions([])
+                setForm(prev => ({...prev, bank_name:""}))
+                break
+        }
+    }, [form.inflow_currency])
 
     const handleOnChange = (e) => {
         const { name, type, value, checked } = e.target;
@@ -96,14 +175,39 @@ const AddBankDetailsModal = ({isOpen, onClose, onSuccess}) => {
                         type="text"
                         value={form.payment_system}
                         onChange={handleOnChange}
+                        disabled={form.currency == ""}
                     >
                         <option value="">Выберите способ оплаты</option>
-                        <option value="SBP">SBP</option>
-                        <option value="C2C">C2C</option>
+                        {
+                            paymentSystemOptions.map((paymentSystem) => (
+                                <option 
+                                    key={paymentSystem.value}
+                                    value={paymentSystem.value}
+                                >
+                                    {paymentSystem.name}
+                                </option>
+                            ))
+                        }
                     </select>
                 </div>
 
-                <div className="bank-modal-row">
+                {inflowCurrencyVisible && <div className="bank-modal-row">
+                    <label htmlFor="inflow_currency">Валюта поступления</label>
+                    <select
+                        name="inflow_currency"
+                        id="inflow_currency"
+                        type="text"
+                        value={form.inflow_currency}
+                        onChange={handleOnChange}
+                        
+                    >
+                        <option value="">Выберите валюту</option>
+                        <option value="RUB">RUB</option>
+                        <option value="TJS">TJS</option>
+                    </select>
+                </div>}
+
+                 <div className="bank-modal-row">
                     <label htmlFor="bank_name">Банк</label>
                     <select
                         name="bank_name"
@@ -123,7 +227,7 @@ const AddBankDetailsModal = ({isOpen, onClose, onSuccess}) => {
                     </select>
                 </div>
 
-                {form.payment_system === 'C2C' && (<div className="bank-modal-row">
+                {(form.payment_system === 'C2C_RUS') && <div className="bank-modal-row">
                     <label htmlFor="card_number">Номер карты</label>
                     <input
                         name="card_number"
@@ -133,9 +237,10 @@ const AddBankDetailsModal = ({isOpen, onClose, onSuccess}) => {
                         value={form.card_number}
                         onChange={handleOnChange}
                     />
-                </div>)}
+                </div>}
 
-                {form.payment_system === 'SBP' && (<div className="bank-modal-row">
+                { (form.payment_system === 'SBP_RUS' || form.payment_system === 'SBP_TJK' || form.payment_system === 'TRANSGRAN' && form.currency === 'RUB' && form.inflow_currency === 'TJS') 
+                && <div className="bank-modal-row">
                     <label>Номер телефона</label>
                     <input
                         name="phone"
@@ -145,7 +250,7 @@ const AddBankDetailsModal = ({isOpen, onClose, onSuccess}) => {
                         value={form.phone}
                         onChange={handleOnChange}
                     />
-                </div>)}
+                </div>}
 
                 <div className="bank-modal-row">
                     <label htmlFor="owner">Имя владельца</label>
