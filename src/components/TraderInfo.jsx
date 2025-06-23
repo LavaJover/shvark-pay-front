@@ -37,8 +37,8 @@ const TraderInfo = () => {
             <div className="trader-wallet">
                 <div className="wallet-info">
                     <p><b>Адрес: </b> {walletAddress} </p>
-                    <p><b>Баланс:</b> {walletBalance} BTC </p>
-                    <p><b>Заморожено:</b> {freezeBalance} BTC</p>
+                    <p><b>Баланс:</b> {walletBalance} USD </p>
+                    <p><b>Заморожено:</b> {freezeBalance} USD</p>
                 </div>
                 <div className="wallet-control">
                     <button className="wallet-button">История</button>

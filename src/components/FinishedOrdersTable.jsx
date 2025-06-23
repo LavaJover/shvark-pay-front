@@ -1,3 +1,6 @@
+import { useState, useEffect } from "react"
+import { useAuth } from "../contexts/AuthContext"
+import api from "../api/axios"
 
 const Requisite = ({bank_name, payment_system, card_number, phone, owner}) => {
 
@@ -20,11 +23,80 @@ const Requisite = ({bank_name, payment_system, card_number, phone, owner}) => {
     )
 }
 
-export const FinishedOrdersTable = ({isOpen, finishedOrders}) => {
+export const FinishedOrdersTable = ({isOpen}) => {
+    
+    const [currentPage, setCurrentPage] = useState(1)
+    const [finishedOrders, setFinishedOrders] = useState([])
+    const {traderID} = useAuth()
+    const [loading, setLoading] = useState(false)
+    const [error, setError] = useState(null)
 
-    if(!isOpen || !finishedOrders)return null
+    const [pagination, setPagination] = useState({
+        page: 1,
+        limit: 10,
+        total: 0,
+    })
+
+    const [sorting, setSorting] = useState({
+        sortBy: 'expires_at',
+        setOrder: 'desc'
+    })
+
+    const [filters, setFilters] = useState({
+        statuses: [],
+        minAmount: '',
+        dateFrom: ''
+    })
+
+    useEffect(() => {
+        async function fetchOrders() {
+            try {
+                setLoading(true)
+                console.log('HOOK в finished')
+                const params = {
+                    page: pagination.page,
+                    limit: pagination.limit,
+                    status: 'SUCCEED'
+                }
+
+                const response = await api.get(`/orders/trader/${traderID}`, {params})
+
+                setFinishedOrders(response.data.orders)
+                console.log(response.data.orders)
+
+                setPagination({
+                    ...pagination,
+                    total: response.data.pagination.total_items
+                })
+            }catch(err) {
+                setError(err)
+            }finally {
+                setLoading(false)
+            }
+        }
+        fetchOrders()
+    }, [isOpen, pagination.page, sorting, filters])
+
+    const handlePageChange = (newPage) => {
+        setPagination({...pagination, page: newPage})
+    }
+
+    const handleSort = (column) => {
+        setSorting(prev => ({
+          sortBy: column,
+          sortOrder: prev.sortBy === column && prev.sortOrder === 'asc' ? 'desc' : 'asc'
+        }));
+    };
+
+    const handleFilterChange = (name, value) => {
+        setFilters(prev => ({ ...prev, [name]: value }));
+        setPagination(prev => ({ ...prev, page: 1 })); // Сброс на первую страницу
+    };
+
+    if (!isOpen) return null
 
     return (
+        <>
         <table>
             <thead>
                 <tr>
@@ -57,5 +129,38 @@ export const FinishedOrdersTable = ({isOpen, finishedOrders}) => {
                 }
             </tbody>
         </table>
+        <div className="pagination">
+            <button
+              onClick={() => handlePageChange(pagination.page - 1)}
+              disabled={pagination.page === 1}
+            >
+              Назад
+            </button>
+            
+            <span>
+              Страница {pagination.page} из {Math.ceil(pagination.total / pagination.limit)}
+            </span>
+            
+            <button
+              onClick={() => handlePageChange(pagination.page + 1)}
+              disabled={pagination.page * pagination.limit >= pagination.total}
+            >
+              Вперед
+            </button>
+            
+            <select
+              value={pagination.limit}
+              onChange={(e) => setPagination({
+                ...pagination,
+                limit: Number(e.target.value),
+                page: 1
+              })}
+            >
+              <option value="10">10 на странице</option>
+              <option value="20">20 на странице</option>
+              <option value="50">50 на странице</option>
+            </select>
+          </div>
+        </>
     )
 }

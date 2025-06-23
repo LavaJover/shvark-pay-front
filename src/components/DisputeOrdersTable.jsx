@@ -34,6 +34,7 @@ export const DisputeOrdersTable = ({isOpen, disputeOrders}) => {
                     <th>Реквизит</th>
                     <th>Сумма в крипте</th>
                     <th>Сумма в фиате</th>
+                    <th>Курс</th>
                     <th>Статус</th>
                 </tr>
             </thead>
@@ -53,6 +54,7 @@ export const DisputeOrdersTable = ({isOpen, disputeOrders}) => {
                             </td>
                             <td>{order.amount_fiat}</td>
                             <td>{order.amount_crypto}</td>
+                            <td>{order.crypto_rub_rate}</td>
                             <td>{order.status}</td>
                         </tr>
                     ))

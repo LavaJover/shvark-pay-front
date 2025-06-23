@@ -26,7 +26,7 @@ export const createBankDetail = async (form) => {
     form.max_orders_simultaneosly = parseFloat(form.max_orders_simultaneosly)
     form.max_quantity_day = parseInt(form.max_quantity_day)
     form.max_quantity_month = parseInt(form.max_quantity_month)
-    form.enabled = (form.enabled === true)
+    // form.enabled = (form.enabled === 'true')
     form.delay = form.delay*60+"s"
     try {
         const response = await api.post('/banking/details', form)
@@ -52,7 +52,7 @@ export const updateBankDetail = async (form) => {
     form.max_orders_simultaneosly = parseFloat(form.max_orders_simultaneosly)
     form.max_quantity_day = parseInt(form.max_quantity_day)
     form.max_quantity_month = parseInt(form.max_quantity_month)
-    form.enabled = (form.enabled === true)
+    // form.enabled = (form.enabled === 'true')
     form.delay = form.delay*60+"s"
     try {
         const response = await api.patch('/banking/details', {'bank_detail': form})

@@ -1,3 +1,9 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
 html, body {
     height: 100%;
     margin: 0;
@@ -85,42 +91,6 @@ header {
     transition-duration: 0.5s;
 }
 /* Модальное окно под реквизиты */
-.bank-modal {
-    position: absolute;
-    display: flex;
-    flex-direction: column;
-    background-color: white;
-    left: 50%;
-    padding: 20px;
-    min-width: 500px;
-    min-height: 500px;
-}
-
-.bank-modal-form {
-    display: flex;
-    flex-direction: column;
-    padding: 3px;
-    
-}
-
-.bank-modal-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 12px;
-  }
-  
-  .bank-modal-row label {
-    flex: 0 0 200px; /* фиксированная ширина метки */
-    font-weight: 500;
-  }
-  
-  .bank-modal-row input, select {
-    flex: 1;
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-  }
   
   /* Стилизация табличек */
 table {
@@ -195,7 +165,7 @@ table tbody tr td:last-child {
 
 .orders-nav {
     position: relative;
-    top: -10px;
+    top: 10px;
     padding: 10px;
     background-color: white;
     box-shadow: 5px 5px 5px rgb(170, 159, 159);

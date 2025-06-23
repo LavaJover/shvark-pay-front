@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react"
 import { useAuth } from "../contexts/AuthContext"
 import { createBankDetail } from "../api/banking"
+import './Modal.css'
 
 const russianBanks = ['Sberbank', 'Tinkoff', 'Alfabank', 'Gazprom']
 const tajikBanks = ['Spitamen', 'Eskhata', 'IBT', 'IMON']

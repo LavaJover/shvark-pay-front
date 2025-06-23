@@ -1,4 +1,6 @@
-import { useTraderOrders } from "../hooks/useTraderOrders"
+import { useState, useEffect } from "react"
+import api from "../api/axios"
+import { useAuth } from "../contexts/AuthContext"
 
 const Requisite = ({bank_name, payment_system, card_number, phone, owner}) => {
 
@@ -21,18 +23,96 @@ const Requisite = ({bank_name, payment_system, card_number, phone, owner}) => {
     )
 }
 
-export const CanceledOrdersTable = ({isOpen, canceledOrders}) => {
+export const CanceledOrdersTable = ({isOpen}) => {
+    
+    const [currentPage, setCurrentPage] = useState(1)
+    const [canceledOrders, setCanceledOrders] = useState([])
+    const {traderID} = useAuth()
+    const [loading, setLoading] = useState(false)
+    const [error, setError] = useState(null)
 
-    if (!isOpen || !canceledOrders) return null
+    const [pagination, setPagination] = useState({
+        page: 1,
+        limit: 5,
+        total: 0,
+    })
+
+    const [sorting, setSorting] = useState({
+        sortBy: 'expires_at',
+        setOrder: 'desc'
+    })
+
+    const [filters, setFilters] = useState({
+        statuses: [],
+        minAmount: '',
+        dateFrom: ''
+    })
+
+    useEffect(() => {
+        async function fetchCanceledOrders() {
+            try {
+                setLoading(true)
+
+                const params = {
+                    page: pagination.page,
+                    limit: pagination.limit,
+                    status: 'CANCELED'
+                }
+
+                const response = await api.get(`/orders/trader/${traderID}`, {params})
+
+                setCanceledOrders(response.data.orders)
+
+                setPagination({
+                    ...pagination,
+                    total: response.data.pagination.total_items
+                })
+            }catch(err) {
+                setError(err)
+            }finally {
+                setLoading(false)
+            }
+        }
+        fetchCanceledOrders()
+    }, [isOpen, pagination.page, sorting, filters])
+
+    const handlePageChange = (newPage) => {
+        setPagination({...pagination, page: newPage})
+    }
+
+    const handleSort = (column) => {
+        setSorting(prev => ({
+          sortBy: column,
+          sortOrder: prev.sortBy === column && prev.sortOrder === 'asc' ? 'desc' : 'asc'
+        }));
+    };
+
+    const handleFilterChange = (name, value) => {
+        setFilters(prev => ({ ...prev, [name]: value }));
+        setPagination(prev => ({ ...prev, page: 1 })); // Сброс на первую страницу
+    };
+
+    if (!isOpen) return null
 
     return (
+        <>
+                Фильтры
+        <div className="filters">
+
+          <input
+            type="date"
+            value={filters.dateFrom}
+            onChange={(e) => handleFilterChange('dateFrom', e.target.value)}
+          />
+        </div>
+
         <table>
             <thead>
                 <tr>
                     <th>ID</th>
                     <th>Реквизит</th>
-                    <th>Сумма в крипте</th>
                     <th>Сумма в фиате</th>
+                    <th>Сумма в крипте</th>
                     <th>Статус</th>
                 </tr>
             </thead>
@@ -58,5 +138,41 @@ export const CanceledOrdersTable = ({isOpen, canceledOrders}) => {
                 }
             </tbody>
         </table>
+
+                  {/* Пагинация */}
+            <div className="pagination">
+            <button
+              onClick={() => handlePageChange(pagination.page - 1)}
+              disabled={pagination.page === 1}
+            >
+              Назад
+            </button>
+            
+            <span>
+              Страница {pagination.page} из {Math.ceil(pagination.total / pagination.limit)}
+            </span>
+            
+            <button
+              onClick={() => handlePageChange(pagination.page + 1)}
+              disabled={pagination.page * pagination.limit >= pagination.total}
+            >
+              Вперед
+            </button>
+            
+            <select
+              value={pagination.limit}
+              onChange={(e) => setPagination({
+                ...pagination,
+                limit: Number(e.target.value),
+                page: 1
+              })}
+            >
+               <option value="10">5 на странице</option> 
+              <option value="10">10 на странице</option>
+              <option value="20">20 на странице</option>
+              <option value="50">50 на странице</option>
+            </select>
+          </div>
+        </>
     )
 }

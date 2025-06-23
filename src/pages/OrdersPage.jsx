@@ -7,69 +7,28 @@ import { DisputeOrdersTable } from "../components/DisputeOrdersTable"
 
 const OrdersPage = () => {
 
-    const {orders, loading} = useTraderOrders()
-    const [isActiveOpen, setIsActiveOpen] = useState(false)
-    const [isFinishedOpen, setIsFinishedOpen] = useState(false)
-    const [isCanceledOpen, setIsCanceledOpen] = useState(false)
-    const [isDisputeOpen, setIsDisputeOpen] = useState(false)
-
-    const handleAciveButton = () => {
-        setIsActiveOpen(true)
-        setIsCanceledOpen(false)
-        setIsDisputeOpen(false)
-        setIsFinishedOpen(false)
-    }
-
-    const handleCanceledButton = () => {
-        setIsActiveOpen(false)
-        setIsCanceledOpen(true)
-        setIsDisputeOpen(false)
-        setIsFinishedOpen(false)
-    }
-
-    const handleFinishedButton = () => {
-        setIsActiveOpen(false)
-        setIsCanceledOpen(false)
-        setIsDisputeOpen(false)
-        setIsFinishedOpen(true)
-    }
-
-    const handleDisputeButton = () => {
-        setIsActiveOpen(false)
-        setIsCanceledOpen(false)
-        setIsDisputeOpen(true)
-        setIsFinishedOpen(false)
-    }
-
-    const activeOrders = orders.filter(order => order.status==='CREATED')
-    const finishedOrders = orders.filter(order => order.status==='SUCCEED')
-    const canceledOrders = orders.filter(order => order.status==='CANCELED')
-    const disputeOrders = orders.filter(order => order.status==='DISPUTE_CREATED' || order.status==='DISPUTE_RESOLVED')
+    const [activeTab, setActiveTab] = useState('created')
 
     return (
         <>
         <h1>Сделки</h1>
         <div className="orders-nav">
-            <button onClick={handleAciveButton}>Активные</button>
-            <button onClick={handleFinishedButton}>Завершённые</button>
-            <button onClick={handleCanceledButton}>Отменённые</button>
-            <button onClick={handleDisputeButton}>Споры</button>
+            <button onClick={() => setActiveTab('created')}>Активные</button>
+            <button onClick={() => setActiveTab('succeed')}>Завершённые</button>
+            <button onClick={() => setActiveTab('canceled')}>Отменённые</button>
+            <button onClick={() => setActiveTab('dispute')}>Споры</button>
         </div>
         <ActiveOrdersTable 
-            isOpen={isActiveOpen}
-            activeOrders={activeOrders}
+            isOpen={activeTab === 'created'}
         />
         <FinishedOrdersTable
-            isOpen={isFinishedOpen}
-            finishedOrders={finishedOrders}
+            isOpen={activeTab === 'succeed'}
         />
         <CanceledOrdersTable
-            isOpen={isCanceledOpen}
-            canceledOrders={canceledOrders}
+            isOpen={activeTab === 'canceled'}
         />
         <DisputeOrdersTable
-            isOpen={isDisputeOpen}
-            disputeOrders={disputeOrders}
+            isOpen={activeTab === 'dispute'}
         />
         </>
     )
