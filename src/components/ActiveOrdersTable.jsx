@@ -3,6 +3,8 @@ import { useAuth } from "../contexts/AuthContext"
 import { useTraderOrders } from "../hooks/useTraderOrders"
 import { useMemo, useState, useEffect } from "react"
 import api from "../api/axios"
+import { CopyableId } from "./CopyableID"
+import './ActiveOrdersTable.css'
 
 const Requisite = ({bank_name, payment_system, card_number, phone, owner}) => {
 
@@ -52,6 +54,27 @@ const TraderReward = ({amount_crypto, trader_reward}) => {
     )
 }
 
+const ApproveOrderModal = ({isOpen, onClose, onSuccess}) => {
+    if (!isOpen) return null
+
+    const handleOnSuccess = () => {
+        onSuccess()
+        onClose()
+    }
+
+    return (
+    <div className="modal-overlay">
+        <div className="approve-modal">
+            <h1>Подтвердить сделку?</h1>
+            <div className="modal-actions">
+                <button onClick={handleOnSuccess} className="approve-modal-btn">Подтвердить</button>
+                <button onClick={() => onClose()} className="cancel-modal-btn">Отмена</button>
+            </div>
+        </div>
+    </div>
+    )
+}
+
 const ActiveOrdersTable = ({isOpen}) => {
     
     const [currentPage, setCurrentPage] = useState(1)
@@ -59,6 +82,8 @@ const ActiveOrdersTable = ({isOpen}) => {
     const {traderID} = useAuth()
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState(null)
+    const [isApproveModalOpen, setIsApproveModalOpen] = useState(false)
+    const [orderID, setOrderID] = useState('')
 
     const [pagination, setPagination] = useState({
         page: 1,
@@ -128,7 +153,12 @@ const ActiveOrdersTable = ({isOpen}) => {
     if (!isOpen) return null
 
     return (
-        <>
+        <div className="orders-container">
+            <ApproveOrderModal
+                isOpen={isApproveModalOpen}
+                onClose={() => setIsApproveModalOpen(false)}
+                onSuccess={() => handleApprove({order_id: orderID})}
+            />
         <table>
             <thead>
                 <tr>
@@ -147,7 +177,9 @@ const ActiveOrdersTable = ({isOpen}) => {
                 {
                     activeOrders.map(order => (
                         <tr key={order.order_id}>
-                            <td>{order.order_id}</td>
+                            <td>
+                                <CopyableId id={order.order_id}/>
+                            </td>
                             <td>
                                 <Requisite
                                     bank_name={order.bank_detail.bank_name}
@@ -164,7 +196,7 @@ const ActiveOrdersTable = ({isOpen}) => {
                             <td><TimeLeft expiresAt={order.expires_at}/></td>
                             <td>{order.status}</td>
                             <td>
-                                <button onClick={() => handleApprove({order_id: order.order_id})}>Подтвердить</button>
+                                <button onClick={() => {setIsApproveModalOpen(true); setOrderID(order.order_id)}}>Подтвердить</button>
                             </td>
                         </tr>
                     ))
@@ -172,39 +204,39 @@ const ActiveOrdersTable = ({isOpen}) => {
             </tbody>
         </table>
                     <div className="pagination">
-                    <button
-                      onClick={() => handlePageChange(pagination.page - 1)}
-                      disabled={pagination.page === 1}
-                    >
-                      Назад
-                    </button>
-                    
-                    <span>
-                      Страница {pagination.page} из {Math.ceil(pagination.total / pagination.limit)}
-                    </span>
-                    
-                    <button
-                      onClick={() => handlePageChange(pagination.page + 1)}
-                      disabled={pagination.page * pagination.limit >= pagination.total}
-                    >
-                      Вперед
-                    </button>
-                    
-                    <select
-                      value={pagination.limit}
-                      onChange={(e) => setPagination({
-                        ...pagination,
-                        limit: Number(e.target.value),
-                        page: 1
-                      })}
-                    >
-                       <option value="10">5 на странице</option> 
-                      <option value="10">10 на странице</option>
-                      <option value="20">20 на странице</option>
-                      <option value="50">50 на странице</option>
-                    </select>
+                        <button
+                          onClick={() => handlePageChange(pagination.page - 1)}
+                          disabled={pagination.page === 1}
+                        >
+                          Назад
+                        </button>
+
+                        <span>
+                          Страница {pagination.page} из {Math.max(Math.ceil(pagination.total / pagination.limit), 1)}
+                        </span>
+
+                        <button
+                          onClick={() => handlePageChange(pagination.page + 1)}
+                          disabled={pagination.page * pagination.limit >= pagination.total}
+                        >
+                          Вперед
+                        </button>
+
+                        <select
+                          value={pagination.limit}
+                          onChange={(e) => setPagination({
+                            ...pagination,
+                            limit: Number(e.target.value),
+                            page: 1
+                          })}
+                        >
+                          <option value="5">5 на странице</option> 
+                          <option value="10">10 на странице</option>
+                          <option value="20">20 на странице</option>
+                          <option value="50">50 на странице</option>
+                        </select>
+                    </div>
                   </div>
-                  </>
     )
 }
 

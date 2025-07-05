@@ -5,13 +5,15 @@ import { FinishedOrdersTable } from "../components/FinishedOrdersTable"
 import { CanceledOrdersTable } from "../components/CanceledOrdersTable"
 import { DisputeOrdersTable } from "../components/DisputeOrdersTable"
 
+import './OrdersPage.css'
+
 const OrdersPage = () => {
 
     const [activeTab, setActiveTab] = useState('created')
 
     return (
         <>
-        <h1>Сделки</h1>
+        <div className="orders-content">
         <div className="orders-nav">
             <button onClick={() => setActiveTab('created')}>Активные</button>
             <button onClick={() => setActiveTab('succeed')}>Завершённые</button>
@@ -30,6 +32,7 @@ const OrdersPage = () => {
         <DisputeOrdersTable
             isOpen={activeTab === 'dispute'}
         />
+        </div>
         </>
     )
 }

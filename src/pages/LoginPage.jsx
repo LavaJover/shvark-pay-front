@@ -8,6 +8,8 @@ const LoginPage = () => {
     const [userPassword, setPassword] = useState('')
     const [error, setError] = useState(null)
     const [loading, setLoading] = useState(false)
+    const [twoFaRequired, setTwoFaRequired] = useState(false)
+    const [twoFACode, setTwoFACode] = useState('')
     const navigate = useNavigate()
 
     const {login} = useAuth()
@@ -20,11 +22,15 @@ const LoginPage = () => {
             setError('Пожалуйста, заполните все поля')
         }
         try {
-            const data = await loginUser({login: userLogin, password: userPassword})
+            const data = await loginUser({login: userLogin, password: userPassword, twoFACode})
             login(data.access_token)
             navigate('/')
         }catch (err) {
-        
+            console.log(err.response.data)
+            if (err.response.data.error === "rpc error: code = Unauthenticated desc = 2FA_REQUIRED"){
+                console.log(true)
+                setTwoFaRequired(true)
+            }
         } finally {
             setLoading(false)
         }
@@ -54,6 +60,9 @@ const LoginPage = () => {
 
             <button>Войти</button>
         </form>
+        {twoFaRequired && (
+             <input type="text" placeholder="Код из Google Authenticator" value={twoFACode} onChange={e => setTwoFACode(e.target.value)} />
+        )}
         </div>
         </>
     )

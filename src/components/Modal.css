@@ -13,14 +13,15 @@
 }
 
 .bank-modal {
-    position: absolute;
+    position: relative;
     display: flex;
     flex-direction: column;
     background-color: white;
-    left: 50%;
     padding: 20px;
-    min-width: 500px;
+    min-width: 600px;
     min-height: 500px;
+    max-width: 90%;
+    max-height: 90vh;
 }
 
 .bank-modal-form {

@@ -22,18 +22,18 @@ const BankDetailsPage = () => {
     }
 
     return (
-        <>
-        <h1>Реквизиты</h1>
-        <button onClick={() => setShowModal((val) => !val)}>Добавить реквизит</button>
-        <AddBankDetailsModal
-            isOpen={showModal}
-            onClose={() => setShowModal(false)}
-            onSuccess={() => toast.success('Реквизит добавлен')}
-        />
-
-        <BankDetailsTable/>
-
-        </>
+        <div className="bank-details-container">
+            <h1>Реквизиты</h1>
+            <div className="bank-details-header">
+                <button onClick={() => setShowModal((val) => !val)}>Добавить реквизит</button>
+            </div>
+            <AddBankDetailsModal
+                isOpen={showModal}
+                onClose={() => setShowModal(false)}
+                onSuccess={() => toast.success('Реквизит добавлен')}
+            />
+            <BankDetailsTable/>
+        </div>
     )
 }
 

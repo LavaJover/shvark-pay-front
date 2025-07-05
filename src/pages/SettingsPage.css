@@ -1,0 +1,13 @@
+.settings-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.twofa-settings-container {
+    min-height: 500px;
+    min-width: 20%;
+    background-color: white;
+    box-shadow: 5px 5px 5px rgb(170, 159, 159);
+    border-radius: 10%;
+}

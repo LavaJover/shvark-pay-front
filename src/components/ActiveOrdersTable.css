@@ -1,0 +1,23 @@
+.approve-modal {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    padding: 20px;
+    max-width: 90%;
+    max-height: 90vh;
+}
+
+.modal-actions{
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.approve-modal-btn{
+    padding: 5px;
+}
+
+.cancel-modal-btn {
+    padding: 5px;
+}

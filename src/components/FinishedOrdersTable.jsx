@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react"
 import { useAuth } from "../contexts/AuthContext"
 import api from "../api/axios"
+import { CopyableId } from "./CopyableID"
 
 const Requisite = ({bank_name, payment_system, card_number, phone, owner}) => {
 
@@ -22,6 +23,16 @@ const Requisite = ({bank_name, payment_system, card_number, phone, owner}) => {
         </div>
     )
 }
+
+const TraderReward = ({amount_crypto, trader_reward}) => {
+    return (
+        <div>
+            <p>Процент: {trader_reward*100}%</p>
+            <p>{amount_crypto * trader_reward} USD</p>
+        </div>
+    )
+}
+
 
 export const FinishedOrdersTable = ({isOpen}) => {
     
@@ -104,6 +115,8 @@ export const FinishedOrdersTable = ({isOpen}) => {
                     <th>Реквизит</th>
                     <th>Сумма в фиате</th>
                     <th>Сумма в крипте</th>
+                    <th>Курс сделки</th>
+                    <th>Награда трейдера</th>
                     <th>Статус</th>
                 </tr>
             </thead>
@@ -111,7 +124,9 @@ export const FinishedOrdersTable = ({isOpen}) => {
                 {
                     finishedOrders.map(order => (
                         <tr key={order.order_id}>
-                            <td>{order.order_id}</td>
+                            <td>
+                                <CopyableId id={order.order_id}/>
+                            </td>
                             <td>
                                 <Requisite
                                     bank_name={order.bank_detail.bank_name}
@@ -123,6 +138,8 @@ export const FinishedOrdersTable = ({isOpen}) => {
                             </td>
                             <td>{order.amount_fiat}</td>
                             <td>{order.amount_crypto}</td>
+                            <td>USD = {order.crypto_rub_rate} {order.bank_detail.currency}</td>
+                            <td><TraderReward amount_crypto={order.amount_crypto} trader_reward={order.trader_reward}/></td>
                             <td>{order.status}</td>
                         </tr>
                     ))

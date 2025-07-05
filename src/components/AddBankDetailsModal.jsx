@@ -147,6 +147,7 @@ const AddBankDetailsModal = ({isOpen, onClose, onSuccess}) => {
     if (!isOpen) return null
 
     return (
+        <div className="modal-overlay">
         <div className="bank-modal">
             <div className="bank-modal-header">
             <h2>Добавить реквизит</h2>
@@ -383,6 +384,7 @@ const AddBankDetailsModal = ({isOpen, onClose, onSuccess}) => {
                 <button type="button" onClick={onClose}>Выйти</button>
             </form>
             </div>
+        </div>
         </div>
     )
 }

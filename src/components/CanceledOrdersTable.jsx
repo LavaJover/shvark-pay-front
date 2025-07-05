@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react"
 import api from "../api/axios"
 import { useAuth } from "../contexts/AuthContext"
+import { CopyableId } from "./CopyableID"
 
 const Requisite = ({bank_name, payment_system, card_number, phone, owner}) => {
 
@@ -95,7 +96,7 @@ export const CanceledOrdersTable = ({isOpen}) => {
     if (!isOpen) return null
 
     return (
-        <>
+        <div className="orders-container">
                 Фильтры
         <div className="filters">
 
@@ -120,7 +121,9 @@ export const CanceledOrdersTable = ({isOpen}) => {
                 {
                     canceledOrders.map(order => (
                         <tr key={order.order_id}>
-                            <td>{order.order_id}</td>
+                            <td>
+                                <CopyableId id={order.order_id}/>
+                            </td>
                             <td>
                                 <Requisite
                                     bank_name={order.bank_detail.bank_name}
@@ -149,7 +152,7 @@ export const CanceledOrdersTable = ({isOpen}) => {
             </button>
             
             <span>
-              Страница {pagination.page} из {Math.ceil(pagination.total / pagination.limit)}
+              Страница {pagination.page} из {Math.max (Math.ceil(pagination.total / pagination.limit, 1))}
             </span>
             
             <button
@@ -173,6 +176,6 @@ export const CanceledOrdersTable = ({isOpen}) => {
               <option value="50">50 на странице</option>
             </select>
           </div>
-        </>
+          </div>
     )
 }
