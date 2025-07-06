@@ -2,6 +2,7 @@ import { useState } from "react"
 import { loginUser } from "../api/auth"
 import { useNavigate } from "react-router-dom"
 import { useAuth } from "../contexts/AuthContext"
+import './LoginPage.css'
 
 const LoginPage = () => {
     const [userLogin, setLogin] = useState('')
@@ -58,11 +59,12 @@ const LoginPage = () => {
                 onChange={(event) => setPassword(event.target.value)}
             />
 
-            <button>Войти</button>
+            {twoFaRequired && (
+                 <input type="text" placeholder="Код из Google Authenticator" value={twoFACode} onChange={e => setTwoFACode(e.target.value)} />
+            )}
+
+            <button type="submit">Войти</button>
         </form>
-        {twoFaRequired && (
-             <input type="text" placeholder="Код из Google Authenticator" value={twoFACode} onChange={e => setTwoFACode(e.target.value)} />
-        )}
         </div>
         </>
     )

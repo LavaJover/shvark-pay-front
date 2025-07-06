@@ -150,7 +150,8 @@ const AddBankDetailsModal = ({isOpen, onClose, onSuccess}) => {
         <div className="modal-overlay">
         <div className="bank-modal">
             <div className="bank-modal-header">
-            <h2>Добавить реквизит</h2>
+                <h2>Добавить реквизит</h2>
+                <button className="modal-close-btn" onClick={onClose}>×</button>
             </div>
             <div className="bank-modal-body">
             <form onSubmit={handleSubmit} className="bank-modal-form">

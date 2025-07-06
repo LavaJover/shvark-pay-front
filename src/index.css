@@ -21,18 +21,6 @@ html, body {
 }
 
 
-.trader-wallet {
-    background-color: white;
-    border-radius: 5%;
-    width:fit-content;
-    padding: 10px;
-    box-shadow: 5px 5px 5px rgb(170, 159, 159);
-    display: flex;
-    position: relative;
-    left: 30%;
-    top: 100px;
-}
-
 .wallet-button {
     border: none;
     padding: 10px;
@@ -58,7 +46,7 @@ html, body {
 /* Модальное окно под реквизиты */
   
   /* Стилизация табличек */
-table {
+/* table {
 	width: 100%;
 	border: none;
 	margin-bottom: 20px;
@@ -92,10 +80,10 @@ table tbody tr td:first-child {
 }
 table tbody tr td:last-child {
 	border-radius: 0 8px 8px 0;
-}
+} */
 
 /* Стилизация формы логина */
-
+/* 
 .login-container {
     position: relative;
     left: 40%;
@@ -124,6 +112,6 @@ table tbody tr td:last-child {
     color: white;
     border: none;
     transition-duration: 0.5s;
-}
+} */
 
 /* Orders */

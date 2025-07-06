@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import { fetchTraderWalletAddress, fetchTraderWalletBalance } from "../api/wallet";
 import { useNavigate } from "react-router-dom";
+import './TraderInfo.css'
 
 
 const TraderInfo = () => {
@@ -39,11 +40,6 @@ const TraderInfo = () => {
                     <p><b>Адрес: </b> {walletAddress} </p>
                     <p><b>Баланс:</b> {walletBalance} USD </p>
                     <p><b>Заморожено:</b> {freezeBalance} USD</p>
-                </div>
-                <div className="wallet-control">
-                    <button className="wallet-button">История</button>
-                    <button className="wallet-button">Вывести</button>
-                    <button className="wallet-button">Пополнить</button>
                 </div>
             </div>
         </article>

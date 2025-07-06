@@ -174,34 +174,36 @@ const ActiveOrdersTable = ({isOpen}) => {
                 </tr>
             </thead>
             <tbody>
-                {
-                    activeOrders.map(order => (
-                        <tr key={order.order_id}>
-                            <td>
-                                <CopyableId id={order.order_id}/>
-                            </td>
-                            <td>
-                                <Requisite
-                                    bank_name={order.bank_detail.bank_name}
-                                    payment_system={order.bank_detail.payment_system}
-                                    card_number={order.bank_detail.card_number}
-                                    phone={order.bank_detail.phone}
-                                    owner={order.bank_detail.owner}
-                                />
-                            </td>
-                            <td>{order.amount_fiat}</td>
-                            <td>{order.amount_crypto}</td>
-                            <td>USD = {order.crypto_rub_rate} {order.bank_detail.currency}</td>
-                            <td><TraderReward amount_crypto={order.amount_crypto} trader_reward={order.trader_reward}/></td>
-                            <td><TimeLeft expiresAt={order.expires_at}/></td>
-                            <td>{order.status}</td>
-                            <td>
-                                <button onClick={() => {setIsApproveModalOpen(true); setOrderID(order.order_id)}}>Подтвердить</button>
-                            </td>
-                        </tr>
-                    ))
-                }
+                {activeOrders.map(order => (
+                  <tr key={order.order_id}>
+                    <td data-label="ID">
+                      <CopyableId id={order.order_id} />
+                    </td>
+                    <td data-label="Реквизит">
+                      <Requisite {...order.bank_detail} />
+                    </td>
+                    <td data-label="Сумма в фиате">{order.amount_fiat}</td>
+                    <td data-label="Сумма в крипте">{order.amount_crypto}</td>
+                    <td data-label="Курс сделки">USD = {order.crypto_rub_rate} {order.bank_detail.currency}</td>
+                    <td data-label="Награда">
+                      <TraderReward amount_crypto={order.amount_crypto} trader_reward={order.trader_reward} />
+                    </td>
+                    <td data-label="Таймер">
+                      <TimeLeft expiresAt={order.expires_at} />
+                    </td>
+                    <td data-label="Статус">{order.status}</td>
+                    <td data-label="">
+                      <button onClick={() => {
+                        setIsApproveModalOpen(true);
+                        setOrderID(order.order_id);
+                      }}>
+                        Подтвердить
+                      </button>
+                    </td>
+                  </tr>
+                ))}
             </tbody>
+
         </table>
                     <div className="pagination">
                         <button

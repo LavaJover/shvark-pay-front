@@ -97,7 +97,7 @@ export const CanceledOrdersTable = ({isOpen}) => {
 
     return (
         <div className="orders-container">
-                Фильтры
+                {/* Фильтры
         <div className="filters">
 
           <input
@@ -105,7 +105,7 @@ export const CanceledOrdersTable = ({isOpen}) => {
             value={filters.dateFrom}
             onChange={(e) => handleFilterChange('dateFrom', e.target.value)}
           />
-        </div>
+        </div> */}
 
         <table>
             <thead>
@@ -118,28 +118,27 @@ export const CanceledOrdersTable = ({isOpen}) => {
                 </tr>
             </thead>
             <tbody>
-                {
-                    canceledOrders.map(order => (
-                        <tr key={order.order_id}>
-                            <td>
-                                <CopyableId id={order.order_id}/>
-                            </td>
-                            <td>
-                                <Requisite
-                                    bank_name={order.bank_detail.bank_name}
-                                    payment_system={order.bank_detail.payment_system}
-                                    card_number={order.bank_detail.card_number}
-                                    phone={order.bank_detail.phone}
-                                    owner={order.bank_detail.owner}
-                                />
-                            </td>
-                            <td>{order.amount_fiat}</td>
-                            <td>{order.amount_crypto}</td>
-                            <td>{order.status}</td>
-                        </tr>
-                    ))
-                }
+                {canceledOrders.map(order => (
+                  <tr key={order.order_id}>
+                    <td data-label="ID">
+                      <CopyableId id={order.order_id} />
+                    </td>
+                    <td data-label="Реквизит">
+                      <Requisite
+                        bank_name={order.bank_detail.bank_name}
+                        payment_system={order.bank_detail.payment_system}
+                        card_number={order.bank_detail.card_number}
+                        phone={order.bank_detail.phone}
+                        owner={order.bank_detail.owner}
+                      />
+                    </td>
+                    <td data-label="Сумма в фиате">{order.amount_fiat}</td>
+                    <td data-label="Сумма в крипте">{order.amount_crypto}</td>
+                    <td data-label="Статус">{order.status}</td>
+                  </tr>
+                ))}
             </tbody>
+
         </table>
 
                   {/* Пагинация */}

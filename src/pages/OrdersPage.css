@@ -1,27 +1,155 @@
-.orders-content{
-    position: relative;
-}
+.orders-content {
+    margin-top: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
 
-.orders-nav {
-    position: relative;
-    padding: 10px;
+  .orders-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: center;
+  }
+  
+  .orders-nav button {
+    padding: 0.6rem 1.2rem;
+    font-size: 1rem;
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+  
+  .orders-nav button:hover {
+    background-color: #e0e0e0;
+  }
+  
+  .orders-nav button.active {
+    background-color: #007bff;
+    color: white;
+    border-color: #007bff;
+  }
+
+  .orders-container table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
     background-color: white;
-    box-shadow: 5px 5px 5px rgb(170, 159, 159);
-}
-
-.orders-nav button {
+  }
+  
+  .orders-container th,
+  .orders-container td {
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    text-align: left;
+    vertical-align: top;
+  }
+  
+  .orders-container th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  
+  .orders-container td button {
+    padding: 0.4rem 0.75rem;
+    font-size: 0.9rem;
+    background-color: #28a745;
     border: none;
-    padding: 8px;
-    margin-right: 5%;
-    font-size: medium;
-    background-color: white;
-}
+    border-radius: 4px;
+    color: white;
+    cursor: pointer;
+  }
+  
+  .orders-container td button:hover {
+    background-color: #218838;
+  }
 
-.orders-nav button:hover {
-    background-color: rgb(235, 230, 230);
-    transition-duration: 0.5s;
-}
+  .pagination {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 2rem;
+  }
+  
+  .pagination button {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+    background-color: #007bff;
+    border: none;
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  
+  .pagination button:disabled {
+    background-color: #cccccc;
+    cursor: default;
+  }
+  
+  .pagination select {
+    padding: 0.5rem;
+    font-size: 0.9rem;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+  }
 
-.orders-container {
-    min-height: 500px;
-}
+  @media (max-width: 768px) {
+    .orders-nav {
+      flex-direction: column;
+      align-items: center;
+    }
+  
+    .orders-container table,
+    .orders-container thead,
+    .orders-container tbody,
+    .orders-container th,
+    .orders-container td,
+    .orders-container tr {
+      display: block;
+    }
+  
+    .orders-container thead {
+      display: none;
+    }
+  
+    .orders-container tr {
+      margin-bottom: 1rem;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      background-color: #fff;
+      padding: 1rem;
+    }
+  
+    .orders-container td {
+      border: none;
+      padding: 0.5rem 0;
+    }
+  
+    .orders-container td::before {
+      content: attr(data-label);
+      font-weight: bold;
+      display: block;
+      margin-bottom: 0.25rem;
+      color: #555;
+    }
+  
+    .pagination {
+      flex-direction: column;
+      align-items: stretch;
+    }
+  
+    .pagination button,
+    .pagination select {
+      width: 100%;
+    }
+  }
+  
+  tr td[data-label="Статус"] {
+    color: green;
+    font-weight: 600;
+  }

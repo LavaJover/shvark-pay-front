@@ -5,6 +5,7 @@ import AddBankDetailsModal from "../components/AddBankDetailsModal"
 import { toast } from "react-toastify"
 import { useTraderBankDetails } from "../hooks/useTraderBankDetails"
 import BankDetailsTable from "../components/BankDetailsTable"
+import './BankDetailsPage.css'
 
 const BankDetailsPage = () => {
 

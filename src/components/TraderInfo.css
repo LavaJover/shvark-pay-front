@@ -1,0 +1,25 @@
+.trader-info {
+    background-color: #f9f9f9;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.05);
+    margin-top: 1.5rem;
+  }
+  
+  .trader-wallet {
+    margin-top: 1rem;
+  }
+  
+  .wallet-info p {
+    margin: 0.5rem 0;
+  }
+  
+  @media (max-width: 480px) {
+    .trader-info {
+      padding: 1rem;
+    }
+  
+    .wallet-info p {
+      font-size: 0.95rem;
+    }
+  }

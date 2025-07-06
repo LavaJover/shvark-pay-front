@@ -1,0 +1,106 @@
+.bank-details-container {
+    margin-top: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  
+  .bank-details-header {
+    display: flex;
+    justify-content: flex-end;
+  }
+  
+  .bank-details-header button {
+    padding: 0.6rem 1.2rem;
+    font-size: 1rem;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  
+  .bank-details-header button:hover {
+    background-color: #0056b3;
+  }
+  
+  .bank-details-table-container table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+    background-color: white;
+  }
+  
+  .bank-details-table-container th,
+  .bank-details-table-container td {
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    text-align: left;
+    vertical-align: top;
+  }
+  
+  .bank-details-table-container th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  
+  .bank-details-table-container td button {
+    padding: 0.4rem 0.75rem;
+    font-size: 0.9rem;
+    background-color: #6c757d;
+    border: none;
+    border-radius: 4px;
+    color: white;
+    cursor: pointer;
+  }
+  
+  .bank-details-table-container td button:hover {
+    background-color: #5a6268;
+  }
+  
+
+  @media (max-width: 768px) {
+    .bank-details-table-container table,
+    .bank-details-table-container thead,
+    .bank-details-table-container tbody,
+    .bank-details-table-container th,
+    .bank-details-table-container td,
+    .bank-details-table-container tr {
+      display: block;
+    }
+  
+    .bank-details-table-container thead {
+      display: none;
+    }
+  
+    .bank-details-table-container tr {
+      margin-bottom: 1rem;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      background-color: #fff;
+      padding: 1rem;
+    }
+  
+    .bank-details-table-container td {
+      border: none;
+      padding: 0.5rem 0;
+    }
+  
+    .bank-details-table-container td::before {
+      content: attr(data-label);
+      font-weight: bold;
+      display: block;
+      margin-bottom: 0.25rem;
+      color: #555;
+    }
+  
+    .bank-details-header {
+      justify-content: center;
+    }
+  
+    .bank-details-header button {
+      width: 100%;
+    }
+  }
+  

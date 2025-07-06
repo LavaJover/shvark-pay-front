@@ -70,6 +70,7 @@ const BankDetailsTable = () => {
 
     return (
         <>
+        <div className="bank-details-table-container">
         <EditbankDetailsModal
             isOpen={showModal}
             onClose={()=>setShowModal(false)}
@@ -94,45 +95,55 @@ const BankDetailsTable = () => {
                 </tr>
             </thead>
             <tbody>
-                {
-                    bankDetails.map(detail => (
-                        <tr key={detail.id}>
-                            <td>
-                                <Requisite 
-                                    bank_name={detail.bank_name} 
-                                    card_number={detail.card_number}
-                                    payment_system={detail.payment_system}
-                                    phone={detail.phone}
-                                    owner={detail.owner}/>
-                            </td>
-                            <td>{detail.currency}</td>
-                            <td>
-                                <SumLimits 
-                                    min_amount={detail.min_amount}
-                                    max_amount={detail.max_amount}
-                                    currency={detail.currency}/>
-                            </td>
-                            <td>
-                                <VolumeLimits
-                                    max_amount_day={detail.max_amount_day}
-                                    max_amount_month={detail.max_amount_month}
-                                    currency={detail.currency}/>
-                            </td>
-                            <td>
-                                <QuantityLimits 
-                                    max_quantity_day={detail.max_quantity_day}
-                                    max_quantity_month={detail.max_quantity_month}
-                                />
-                            </td>
-                            <td>{detail.max_orders_simultaneosly}</td>
-                            <td>{detail.enabled ? 'Включен': 'Выключен'}</td>
-                            <td><button onClick={() => handleEdit(detail)}>Редактировать</button></td>
-                            <td><button onClick={() => handleDelete(detail.id)}>Удалить</button></td>
-                        </tr>
-                    ))
-                }
+                {bankDetails.map(detail => (
+                  <tr key={detail.id}>
+                    <td data-label="Реквизиты">
+                      <Requisite
+                        bank_name={detail.bank_name}
+                        card_number={detail.card_number}
+                        payment_system={detail.payment_system}
+                        phone={detail.phone}
+                        owner={detail.owner}
+                      />
+                    </td>
+                    <td data-label="Валюта">{detail.currency}</td>
+                    <td data-label="Лимиты по суммам">
+                      <SumLimits
+                        min_amount={detail.min_amount}
+                        max_amount={detail.max_amount}
+                        currency={detail.currency}
+                      />
+                    </td>
+                    <td data-label="По объёму">
+                      <VolumeLimits
+                        max_amount_day={detail.max_amount_day}
+                        max_amount_month={detail.max_amount_month}
+                        currency={detail.currency}
+                      />
+                    </td>
+                    <td data-label="По количеству">
+                      <QuantityLimits
+                        max_quantity_day={detail.max_quantity_day}
+                        max_quantity_month={detail.max_quantity_month}
+                      />
+                    </td>
+                    <td data-label="Одновременно">
+                      {detail.max_orders_simultaneosly}
+                    </td>
+                    <td data-label="Статус">
+                      {detail.enabled ? 'Включен' : 'Выключен'}
+                    </td>
+                    <td data-label="Редактировать">
+                      <button onClick={() => handleEdit(detail)}>Редактировать</button>
+                    </td>
+                    <td data-label="Удалить">
+                      <button onClick={() => handleDelete(detail.id)}>Удалить</button>
+                    </td>
+                  </tr>
+                ))}
             </tbody>
         </table>
+        </div>
         </>
     )
 }

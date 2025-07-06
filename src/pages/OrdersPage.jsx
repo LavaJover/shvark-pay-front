@@ -15,10 +15,10 @@ const OrdersPage = () => {
         <>
         <div className="orders-content">
         <div className="orders-nav">
-            <button onClick={() => setActiveTab('created')}>Активные</button>
+            <button onClick={() => setActiveTab('created')} className={activeTab === 'created' ? 'active' : ''}>Активные</button>
             <button onClick={() => setActiveTab('succeed')}>Завершённые</button>
             <button onClick={() => setActiveTab('canceled')}>Отменённые</button>
-            <button onClick={() => setActiveTab('dispute')}>Споры</button>
+            {/* <button onClick={() => setActiveTab('dispute')}>Споры</button> */}
         </div>
         <ActiveOrdersTable 
             isOpen={activeTab === 'created'}

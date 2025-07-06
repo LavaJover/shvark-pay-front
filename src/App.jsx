@@ -5,7 +5,7 @@ import HomePage from './pages/HomePage';
 import HistoryPage from './pages/HistoryPage';
 import SettingsPage from './pages/SettingsPage';
 import OrdersPage from './pages/OrdersPage';
-import StatPage from './pages/StatPage';
+import StatPage from './pages/StatisticsPage';
 import LoginPage from './pages/LoginPage';
 import BankDetailsPage from './pages/BankDetailsPage';
 import { ToastContainer } from 'react-toastify';
