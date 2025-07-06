@@ -5,7 +5,7 @@ import { useAuth } from '../contexts/AuthContext'
 const getToken = () => localStorage.getItem('token')
 
 const api = axios.create({
-    baseURL: 'http://localhost:8080/api/v1',
+    baseURL: 'http://158.160.188.216:8080/api/v1',
     headers: {
         'Content-Type': 'application/json'
     }
