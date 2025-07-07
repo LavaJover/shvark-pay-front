@@ -2,7 +2,7 @@ import api from "./axios"
 
 export const fetchTraderOrders = async ({traderID}) => {
     try {
-        const response = await api.get(`http://localhost:8080/api/v1/orders/trader/${traderID}`)
+        const response = await api.get(`/orders/trader/${traderID}`)
         console.log(response.data.orders)
         return response.data
     }catch(error) {
@@ -18,7 +18,7 @@ export const fetchTraderOrders = async ({traderID}) => {
 
 export const approveTraderOrder = async({order_id}) => {
     try {
-        const response = await api.post(`http://localhost:8080/api/v1/orders/approve`, {
+        const response = await api.post(`/orders/approve`, {
             "order_id": order_id
         })
         return response.data
