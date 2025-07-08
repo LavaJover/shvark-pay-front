@@ -1,34 +1,14 @@
 import api from "./axios"
 
 export const fetchTraderOrders = async ({traderID}) => {
-    try {
-        const response = await api.get(`/orders/trader/${traderID}`)
-        console.log(response.data.orders)
-        return response.data
-    }catch(error) {
-        if (error.response){
-
-        }else if (error.request) {
-
-        }else {
-            console.log('Invalid request to get trader orders...')
-        }
-    }
+    const response = await api.get(`/orders/trader/${traderID}`)
+    console.log(response.data.orders)
+    return response.data
 } 
 
 export const approveTraderOrder = async({order_id}) => {
-    try {
-        const response = await api.post(`/orders/approve`, {
-            "order_id": order_id
-        })
-        return response.data
-    }catch(error) {
-        if (error.response){
-
-        }else if (error.request) {
-
-        }else {
-            console.log('Invalid request to get trader orders...')
-        }
-    }
+    const response = await api.post(`/orders/approve`, {
+        "order_id": order_id
+    })
+    return response.data
 }

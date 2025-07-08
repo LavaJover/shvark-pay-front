@@ -22,8 +22,7 @@ const TraderInfo = () => {
                 setFreezeBalance(balanceData.frozen)
                 setWalletAddress(addressData.address)
             }catch(err) {
-                if (err.message == 'unauthorized'){
-                    console.log('in try catch')
+                if (err.response.status == 401){
                     logout()
                     navigate('/login')
                 }

@@ -3,9 +3,10 @@ import {toast} from 'react-toastify'
 import { useAuth } from '../contexts/AuthContext'
 
 const getToken = () => localStorage.getItem('token')
+const apiUrl = import.meta.env.VITE_API_URL;
 
 const api = axios.create({
-    baseURL: 'http://158.160.188.216:8080/api/v1',
+    baseURL: `${apiUrl}/api/v1`,
     headers: {
         'Content-Type': 'application/json'
     }
@@ -29,7 +30,9 @@ api.interceptors.response.use(
             const {status, data} = error.response
 
             if (status == 401){
-                toast.error('Сессия истекла. Пожалуйста, войдите снова.')
+                toast.error('Вы не авторизованы')
+            }else if (status == 403){
+                toast.error('Нет доступа')
             }else if (status >= 500) {
                 toast.error('Ошибка сервера. Попробуйте позже')
             }else if (status >= 400) {

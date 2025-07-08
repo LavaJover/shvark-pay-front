@@ -29,7 +29,6 @@ const LoginPage = () => {
         }catch (err) {
             console.log(err.response.data)
             if (err.response.data.error === "rpc error: code = Unauthenticated desc = 2FA_REQUIRED"){
-                console.log(true)
                 setTwoFaRequired(true)
             }
         } finally {
