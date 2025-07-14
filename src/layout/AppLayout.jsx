@@ -6,7 +6,7 @@ import './AppLayout.css'
 import { useState } from 'react'
 
 const AppLayout = () => {
-    const {logout} = useAuth()
+    const {logout, isAdmin} = useAuth()
     const navigate = useNavigate()
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
@@ -35,6 +35,12 @@ const AppLayout = () => {
                     <Link to="/history" className='nav-link' onClick={() => setMobileMenuOpen(false)}>История операций</Link>
                     <Link to="/stats" className='nav-link' onClick={() => setMobileMenuOpen(false)}>Статистика</Link>
                     <Link to="/settings" className='nav-link' onClick={() => setMobileMenuOpen(false)}>Настройки</Link>
+
+                    {isAdmin && (
+                        <Link to="/admin" className='nav-link' onClick={() => setMobileMenuOpen(false)}>
+                            Админ-панель
+                        </Link>
+                    )}
 
                     <div className="mobile-logout">
                         <button className="logout-button" onClick={handleLogout}>Выйти</button>

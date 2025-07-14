@@ -11,21 +11,38 @@ import BankDetailsPage from './pages/BankDetailsPage';
 import { ToastContainer } from 'react-toastify';
 import { AuthProvider } from './contexts/AuthContext';
 import PrivateRoute from './auth/PrivateRoute';
+import AdminRoute from './auth/AdminRoute';
+import AdminPanel from './pages/AdminPanel';
+import AdminTradersPage from './pages/AdminTradersPage';
+import AdminMerchantsPage from './pages/AdminMerchantsPage';
+import AdminTrafficPage from './pages/AdminTrafficPage';
+import AdminWalletsPage from './pages/AdminWalletsPage';
 
 function App() {
   return (
       <>
       <AuthProvider>
       <Routes>
-      <Route path="/" element={<PrivateRoute> <AppLayout/> </PrivateRoute>}>
-        <Route index element={<HomePage/>}/>
-        <Route path="history" element={<HistoryPage/>}/>
-        <Route path="settings" element={<SettingsPage/>}/>
-        <Route path="orders" element={<OrdersPage/>}/>
-        <Route path="bank-details" element={<BankDetailsPage/>}/>
-        <Route path="stats" element={<StatPage/>}/>
-      </Route>
-      <Route path="/login" element={<LoginPage/>}/>
+        <Route path="/" element={<PrivateRoute> <AppLayout/> </PrivateRoute>}>
+          <Route index element={<HomePage/>}/>
+          <Route path="history" element={<HistoryPage/>}/>
+          <Route path="settings" element={<SettingsPage/>}/>
+          <Route path="orders" element={<OrdersPage/>}/>
+          <Route path="bank-details" element={<BankDetailsPage/>}/>
+          <Route path="stats" element={<StatPage/>}/>
+          <Route path="admin" element={
+            <AdminRoute>
+                <AdminPanel />
+            </AdminRoute>
+          }>
+              <Route path="traders" element={<AdminTradersPage />} />
+              <Route path="merchants" element={<AdminMerchantsPage/>} />
+              <Route path="traffic" element={<AdminTrafficPage/>} />
+              <Route path="wallets" element={<AdminWalletsPage/>} />
+              <Route path="disputes" element={<div>Диспуты</div>} />
+          </Route>
+        </Route>
+        <Route path="/login" element={<LoginPage/>}/>
       </Routes>
       <ToastContainer position='bottom-right' autoClose={3000}/>
       </AuthProvider>

@@ -1,0 +1,98 @@
+.admin-merchants-page {
+    padding: 1rem;
+  }
+  
+  .admin-form {
+    max-width: 500px;
+    margin-bottom: 2rem;
+  }
+  
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1rem;
+  }
+  
+  .form-group label {
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+  }
+  
+  .form-group input {
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  .admin-form button {
+    padding: 0.5rem 1rem;
+    font-weight: bold;
+    background-color: #007bff;
+    border: none;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .admin-form button:disabled {
+    background-color: #aaa;
+    cursor: not-allowed;
+  }
+  
+  .admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+  }
+  
+  .admin-table th,
+  .admin-table td {
+    border: 1px solid #ccc;
+    padding: 0.75rem;
+    text-align: left;
+  }
+  
+  .admin-table th {
+    background-color: #f8f8f8;
+    font-weight: bold;
+  }
+  
+  @media screen and (max-width: 768px) {
+    .admin-table,
+    .admin-table thead,
+    .admin-table tbody,
+    .admin-table th,
+    .admin-table td,
+    .admin-table tr {
+      display: block;
+      width: 100%;
+    }
+  
+    .admin-table thead {
+      display: none;
+    }
+  
+    .admin-table tr {
+      margin-bottom: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 0.5rem;
+      background-color: #fafafa;
+    }
+  
+    .admin-table td {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.5rem 0;
+      border: none;
+      border-bottom: 1px solid #eee;
+    }
+  
+    .admin-table td::before {
+      content: attr(data-label);
+      font-weight: bold;
+      margin-right: 1rem;
+      flex-shrink: 0;
+    }
+  }
+  
