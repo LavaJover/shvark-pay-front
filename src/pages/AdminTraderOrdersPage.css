@@ -1,0 +1,236 @@
+/* Основной контейнер */
+.admin-trader-orders-page {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 0 15px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #333;
+  }
+  
+  /* Заголовок */
+  .admin-trader-orders-page h1 {
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  
+  /* Фильтры - общий контейнер */
+  .filter-row,
+  .filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 20px;
+    justify-content: center;
+  }
+  
+  /* Элементы фильтров */
+  .filter-row label,
+  .filter-item label {
+    font-weight: 600;
+    margin-bottom: 6px;
+    display: block;
+    font-size: 0.9rem;
+    color: #555;
+  }
+  
+  /* Контейнер для отдельных фильтров */
+  .filter-row > label,
+  .filter-row > select,
+  .filter-item {
+    min-width: 150px;
+  }
+  
+  /* Выпадающие списки и инпуты */
+  .filter-row select,
+  .filters select,
+  .filters input[type="number"],
+  .filters input[type="text"],
+  .filters input[type="date"] {
+    width: 100%;
+    padding: 6px 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    transition: border-color 0.2s ease;
+  }
+  
+  .filter-row select:focus,
+  .filters select:focus,
+  .filters input[type="number"]:focus,
+  .filters input[type="text"]:focus,
+  .filters input[type="date"]:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.4);
+  }
+  
+  /* Множественный select — высота и скролл */
+  .filters select[multiple] {
+    height: 100px;
+    overflow-y: auto;
+    user-select: none;
+  }
+  
+  /* Таблица сделок */
+  .orders-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.05);
+    border-radius: 6px;
+    overflow: hidden;
+    background: #fff;
+  }
+  
+  .orders-table th,
+  .orders-table td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #eaeaea;
+    text-align: left;
+    vertical-align: middle;
+  }
+  
+  .orders-table thead th {
+    background-color: #f7f9fc;
+    font-weight: 600;
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 0.2s ease;
+  }
+  
+  .orders-table thead th:hover {
+    background-color: #e1ecf9;
+  }
+  
+  .orders-table tbody tr:hover {
+    background-color: #f1f7ff;
+  }
+  
+  .orders-table tbody tr:last-child td {
+    border-bottom: none;
+  }
+  
+  /* Пагинация */
+  .pagination {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+  }
+  
+  .pagination button {
+    padding: 7px 15px;
+    font-size: 0.9rem;
+    border: 1px solid #007bff;
+    background-color: #007bff;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+  
+  .pagination button:disabled {
+    background-color: #a3cdfd;
+    border-color: #a3cdfd;
+    cursor: default;
+  }
+  
+  .pagination button:not(:disabled):hover {
+    background-color: #0056b3;
+    border-color: #0056b3;
+  }
+  
+  .pagination span {
+    font-weight: 600;
+    font-size: 1rem;
+    color: #444;
+  }
+  
+  /* Адаптивность */
+  
+  /* На планшетах */
+  @media (max-width: 900px) {
+    .filters {
+      justify-content: flex-start;
+    }
+  
+    .filter-row,
+    .filters {
+      gap: 10px;
+    }
+  
+    .filter-item,
+    .filter-row > label,
+    .filter-row > select {
+      min-width: 120px;
+    }
+  
+    .orders-table th,
+    .orders-table td {
+      padding: 10px 8px;
+      font-size: 0.85rem;
+    }
+  }
+  
+  /* На мобильных */
+  @media (max-width: 600px) {
+    .filter-row,
+    .filters {
+      flex-direction: column;
+      gap: 15px;
+      align-items: stretch;
+    }
+  
+    .filter-item,
+    .filter-row > label,
+    .filter-row > select {
+      min-width: auto;
+      width: 100%;
+    }
+  
+    .orders-table,
+    .orders-table thead,
+    .orders-table tbody,
+    .orders-table th,
+    .orders-table td,
+    .orders-table tr {
+      display: block;
+    }
+  
+    .orders-table thead tr {
+      position: absolute;
+      top: -9999px;
+      left: -9999px;
+    }
+  
+    .orders-table tr {
+      margin-bottom: 15px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      padding: 10px;
+    }
+  
+    .orders-table td {
+      border: none;
+      position: relative;
+      padding-left: 50%;
+      text-align: right;
+      font-size: 0.9rem;
+    }
+  
+    .orders-table td::before {
+      position: absolute;
+      top: 10px;
+      left: 15px;
+      width: 45%;
+      padding-right: 10px;
+      white-space: nowrap;
+      font-weight: 600;
+      text-align: left;
+      color: #666;
+      content: attr(data-label);
+    }
+  }
+  

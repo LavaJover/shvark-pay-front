@@ -31,6 +31,9 @@ const AdminPanel = () => {
             <li className={location.pathname.includes('/admin/disputes') ? 'active' : ''}>
               <Link to="/admin/disputes" onClick={() => setMenuOpen(false)}>Диспуты</Link>
             </li>
+            <li className={location.pathname.includes('/admin/orders') ? 'active' : ''}>
+              <Link to="/admin/orders" onClick={() => setMenuOpen(false)}>Сделки</Link>
+            </li>
           </ul>
         </nav>
       </aside>

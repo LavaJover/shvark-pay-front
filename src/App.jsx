@@ -17,6 +17,8 @@ import AdminTradersPage from './pages/AdminTradersPage';
 import AdminMerchantsPage from './pages/AdminMerchantsPage';
 import AdminTrafficPage from './pages/AdminTrafficPage';
 import AdminWalletsPage from './pages/AdminWalletsPage';
+import AdminDisputesPage from './pages/AdminDisputesPage';
+import AdminTraderOrdersPage from './pages/AdminTraderOrdersPage';
 
 function App() {
   return (
@@ -39,7 +41,8 @@ function App() {
               <Route path="merchants" element={<AdminMerchantsPage/>} />
               <Route path="traffic" element={<AdminTrafficPage/>} />
               <Route path="wallets" element={<AdminWalletsPage/>} />
-              <Route path="disputes" element={<div>Диспуты</div>} />
+              <Route path="disputes" element={<AdminDisputesPage/>} />
+              <Route path="orders" element={<AdminTraderOrdersPage/>} />
           </Route>
         </Route>
         <Route path="/login" element={<LoginPage/>}/>
