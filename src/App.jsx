@@ -19,6 +19,8 @@ import AdminTrafficPage from './pages/AdminTrafficPage';
 import AdminWalletsPage from './pages/AdminWalletsPage';
 import AdminDisputesPage from './pages/AdminDisputesPage';
 import AdminTraderOrdersPage from './pages/AdminTraderOrdersPage';
+import TelegramLogin from './pages/AdminTelegramPage';
+import SettleSettings from './pages/AdminSettleSettings';
 
 function App() {
   return (
@@ -43,6 +45,8 @@ function App() {
               <Route path="wallets" element={<AdminWalletsPage/>} />
               <Route path="disputes" element={<AdminDisputesPage/>} />
               <Route path="orders" element={<AdminTraderOrdersPage/>} />
+              <Route path="telegram" element={<TelegramLogin/>} />
+              <Route path="settle-settings" element={<SettleSettings/>} />
           </Route>
         </Route>
         <Route path="/login" element={<LoginPage/>}/>

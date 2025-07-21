@@ -35,7 +35,6 @@ const AppLayout = () => {
                     <Link to="/history" className='nav-link' onClick={() => setMobileMenuOpen(false)}>История операций</Link>
                     <Link to="/stats" className='nav-link' onClick={() => setMobileMenuOpen(false)}>Статистика</Link>
                     <Link to="/settings" className='nav-link' onClick={() => setMobileMenuOpen(false)}>Настройки</Link>
-
                     {isAdmin && (
                         <Link to="/admin" className='nav-link' onClick={() => setMobileMenuOpen(false)}>
                             Админ-панель
