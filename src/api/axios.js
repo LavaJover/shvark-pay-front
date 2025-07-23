@@ -34,9 +34,9 @@ api.interceptors.response.use(
             }else if (status == 403){
                 toast.error('Нет доступа')
             }else if (status >= 500) {
-                toast.error('Ошибка сервера. Попробуйте позже')
+                // toast.error('Ошибка сервера. Попробуйте позже')
             }else if (status >= 400) {
-                toast.error(data.message || 'Ошибка запроса')
+                // toast.error(data.message || 'Ошибка запроса')
             }
         }else {
             toast.error('Ошибка сети. Проверьте подключение')

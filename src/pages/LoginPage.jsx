@@ -3,6 +3,7 @@ import { loginUser } from "../api/auth"
 import { useNavigate } from "react-router-dom"
 import { useAuth } from "../contexts/AuthContext"
 import './LoginPage.css'
+import { toast } from "react-toastify"
 
 const LoginPage = () => {
     const [userLogin, setLogin] = useState('')
@@ -27,9 +28,13 @@ const LoginPage = () => {
             login(data.access_token)
             navigate('/')
         }catch (err) {
-            console.log(err.response.data)
-            if (err.response.data.error === "rpc error: code = Unauthenticated desc = 2FA_REQUIRED"){
-                setTwoFaRequired(true)
+            if (err.response){
+                if (err.response.data.error === "rpc error: code = Unauthenticated desc = 2FA_REQUIRED"){
+                    toast.info('Введите код 2FA')
+                    setTwoFaRequired(true)
+                }else if (err.response.status >= 500) {
+                    toast.error('Неверные данные')
+                }
             }
         } finally {
             setLoading(false)

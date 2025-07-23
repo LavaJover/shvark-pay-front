@@ -1181,6 +1181,7 @@ const EditbankDetailsModal = ({isOpen, onClose, onSuccess, detail}) => {
             onClose()
         }
         sendData()
+        window.location.reload();
     }
 
     return (

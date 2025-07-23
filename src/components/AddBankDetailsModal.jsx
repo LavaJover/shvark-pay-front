@@ -2,7 +2,7 @@ import { useState, useEffect } from "react"
 import { useAuth } from "../contexts/AuthContext"
 import { createBankDetail } from "../api/banking"
 import './Modal.css'
-import axios from "axios"
+import InputMask from 'react-input-mask'
 
 const tajikBanks = ['Spitamen', 'Eskhata', 'IBT', 'IMON']
 const abkhasianBanks = ['Amra', 'Aurora', 'Bank Abskasia']
@@ -1189,6 +1189,7 @@ const AddBankDetailsModal = ({isOpen, onClose, onSuccess}) => {
             onClose()
         }
         sendData()
+        window.location.reload();
     }
 
     if (!isOpen) return null

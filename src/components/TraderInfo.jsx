@@ -36,7 +36,7 @@ const TraderInfo = () => {
             <p>ID: {traderID}</p>
             <div className="trader-wallet">
                 <div className="wallet-info">
-                    <p><b>Адрес: </b> {walletAddress} </p>
+                    {/* <p><b>Адрес: </b> {walletAddress} </p> */}
                     <p><b>Баланс:</b> {walletBalance} USD </p>
                     <p><b>Заморожено:</b> {freezeBalance} USD</p>
                 </div>
