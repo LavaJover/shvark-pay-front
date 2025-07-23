@@ -19,7 +19,7 @@
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-hook-form": "^7.57.0",
-    "react-input-mask": "^2.0.4",
+    "react-input-mask-next": "^3.0.0-alpha.12",
     "react-router-dom": "^7.6.2",
     "react-toastify": "^11.0.5",
     "react-tooltip": "^5.29.1",

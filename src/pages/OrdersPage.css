@@ -153,3 +153,119 @@
     color: green;
     font-weight: 600;
   }
+
+/* Вариант 1: Карточка с иконками */
+.requisite-card {
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  padding: 12px;
+  border: 1px solid #e9ecef;
+  font-size: 0.9rem;
+}
+
+.requisite-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.requisite-item:last-child {
+  margin-bottom: 0;
+}
+
+.requisite-icon {
+  margin-right: 8px;
+  font-size: 1.1rem;
+}
+
+.requisite-label {
+  font-weight: 600;
+  min-width: 70px;
+  color: #6c757d;
+  margin-right: 8px;
+}
+
+.requisite-value {
+  color: #212529;
+  font-weight: 500;
+}
+
+/* Вариант 2: Минималистичные теги */
+.requisite-minimal {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.requisite-tag {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.system {
+  background-color: #e0f7fa;
+  color: #00838f;
+  border: 1px solid #b2ebf2;
+}
+
+.bank {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+  border: 1px solid #c8e6c9;
+}
+
+.card {
+  background-color: #fff3e0;
+  color: #ef6c00;
+  border: 1px solid #ffe0b2;
+}
+
+.phone {
+  background-color: #e3f2fd;
+  color: #1565c0;
+  border: 1px solid #bbdefb;
+}
+
+.owner {
+  background-color: #f3e5f5;
+  color: #7b1fa2;
+  border: 1px solid #e1bee7;
+}
+
+.trader-reward-balanced {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: 8px;
+  padding: 8px 12px;
+  border: 1px solid #dee2e6;
+}
+
+.trader-reward-balanced .reward-percent,
+.trader-reward-balanced .reward-amount {
+  text-align: center;
+}
+
+.trader-reward-balanced .percent-value,
+.trader-reward-balanced .amount-value {
+  font-weight: 700;
+  font-size: 1.2rem;
+  color: #28a745;
+}
+
+.trader-reward-balanced .percent-label,
+.trader-reward-balanced .amount-label {
+  font-size: 0.75rem;
+  color: #6c757d;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.trader-reward-balanced .reward-separator {
+  color: #adb5bd;
+  font-size: 1.2rem;
+}

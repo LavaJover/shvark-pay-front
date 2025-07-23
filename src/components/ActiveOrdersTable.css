@@ -21,3 +21,38 @@
 .cancel-modal-btn {
     padding: 5px;
 }
+
+/* Добавим в ActiveOrdersTable.css */
+.deal-amount {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  
+  .fiat-amount {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #2c3e50;
+  }
+  
+  .crypto-amount {
+    font-size: 0.9rem;
+    color: #7f8c8d;
+  }
+  
+  .exchange-rate {
+    font-size: 0.8rem;
+    color: #95a5a6;
+    font-style: italic;
+  }
+  
+  .currency {
+    font-size: 0.8em;
+    color: #3498db;
+    margin-left: 2px;
+  }
+
+  .deal-amount .icon {
+    margin-right: 5px;
+    font-size: 0.9em;
+  }

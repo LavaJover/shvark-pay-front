@@ -1,0 +1,277 @@
+/* Стили для модального окна подтверждения удаления */
+.confirm-delete-modal {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    max-width: 500px;
+    width: 100%;
+    padding: 20px;
+  }
+  
+  .confirm-delete-modal .modal-header {
+    border-bottom: 1px solid #eee;
+    padding-bottom: 15px;
+    margin-bottom: 15px;
+  }
+  
+  .confirm-delete-modal .modal-body {
+    padding: 20px 0;
+    margin-bottom: 20px;
+  }
+  
+  .confirm-delete-modal .modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+  }
+  
+  .confirm-delete-modal .cancel-btn {
+    background-color: #cfc2c2;
+    border: 1px solid #ddd;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .confirm-delete-modal .confirm-btn {
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .confirm-delete-modal .confirm-btn:hover {
+    background-color: #c0392b;
+  }
+  
+  .delete-btn {
+    background-color: #ffebee;
+    color: #c62828;
+    border: 1px solid #ffcdd2;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .delete-btn:hover {
+    background-color: #ffcdd2;
+  }
+
+  /* Вариант 1: Карточка с иконками */
+.requisite-card {
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    padding: 12px;
+    border: 1px solid #e9ecef;
+    font-size: 0.9rem;
+  }
+  
+  .requisite-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  
+  .requisite-item:last-child {
+    margin-bottom: 0;
+  }
+  
+  .requisite-icon {
+    margin-right: 8px;
+    font-size: 1.1rem;
+  }
+  
+  .requisite-label {
+    font-weight: 600;
+    min-width: 70px;
+    color: #6c757d;
+    margin-right: 8px;
+  }
+  
+  .requisite-value {
+    color: #212529;
+    font-weight: 500;
+  }
+  
+  /* Вариант 2: Минималистичные теги */
+  .requisite-minimal {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  
+  .requisite-tag {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    font-weight: 500;
+  }
+  
+  .system {
+    background-color: #e0f7fa;
+    color: #00838f;
+    border: 1px solid #b2ebf2;
+  }
+  
+  .bank {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+    border: 1px solid #c8e6c9;
+  }
+  
+  .card {
+    background-color: #fff3e0;
+    color: #ef6c00;
+    border: 1px solid #ffe0b2;
+  }
+  
+  .phone {
+    background-color: #e3f2fd;
+    color: #1565c0;
+    border: 1px solid #bbdefb;
+  }
+  
+  .owner {
+    background-color: #f3e5f5;
+    color: #7b1fa2;
+    border: 1px solid #e1bee7;
+  }
+
+  /* CombinedLimits styles */
+.combined-limits-card {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    padding: 12px;
+    border: 1px solid #e9ecef;
+    font-size: 0.85rem;
+  }
+  
+  .limits-section {
+    padding: 8px;
+    border-radius: 6px;
+    background-color: white;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  }
+  
+  .section-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .section-header .icon {
+    margin-right: 6px;
+    font-size: 1.1rem;
+  }
+  
+  .section-header .title {
+    font-weight: 600;
+    color: #2c3e50;
+    font-size: 0.9rem;
+  }
+  
+  .limits-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 3px;
+  }
+  
+  .limits-row .label {
+    color: #6c757d;
+  }
+  
+  .limits-row .value {
+    font-weight: 500;
+    color: #212529;
+  }
+  
+  .simultaneous {
+    grid-column: span 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .value-big {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #3498db;
+  }
+  
+  /* Status badge */
+  .status-badge {
+    padding: 5px 10px;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    width: fit-content;
+  }
+  
+  .status-badge.active {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+    border: 1px solid #c8e6c9;
+  }
+  
+  .status-badge.inactive {
+    background-color: #ffebee;
+    color: #c62828;
+    border: 1px solid #ffcdd2;
+  }
+  
+  /* Responsive styles */
+  @media (max-width: 1200px) {
+    .combined-limits-card {
+      grid-template-columns: 1fr;
+    }
+    
+    .simultaneous {
+      grid-column: span 1;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .bank-details-table-container table {
+      display: block;
+    }
+    
+    .bank-details-table-container tr {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 20px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 10px;
+    }
+    
+    .bank-details-table-container td {
+      display: flex;
+      flex-direction: column;
+      padding: 8px 0;
+      border: none;
+    }
+    
+    .bank-details-table-container td:before {
+      content: attr(data-label);
+      font-weight: bold;
+      margin-bottom: 5px;
+      color: #3498db;
+    }
+    
+    .combined-limits-card {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .combined-limits-card {
+      grid-template-columns: 1fr;
+    }
+  }

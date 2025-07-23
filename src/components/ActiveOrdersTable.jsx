@@ -1,58 +1,116 @@
 import { approveTraderOrder } from "../api/orders"
 import { useAuth } from "../contexts/AuthContext"
 import { useTraderOrders } from "../hooks/useTraderOrders"
-import { useMemo, useState, useEffect } from "react"
+import React, { useMemo, useState, useEffect } from "react"
 import api from "../api/axios"
 import { CopyableId } from "./CopyableID"
 import './ActiveOrdersTable.css'
 
 const Requisite = ({bank_name, payment_system, card_number, phone, owner}) => {
-
-    if (card_number) return (
-        <div>
-            <p>{payment_system}</p>
-            <p>{bank_name}</p>
-            <p>{card_number}</p>
-            <p>{owner}</p>
+  return (
+    <div className="requisite-card">
+      <div className="requisite-item">
+        <span className="requisite-icon">💳</span>
+        <span className="requisite-label">Система:</span>
+        <span className="requisite-value">{payment_system}</span>
+      </div>
+      
+      <div className="requisite-item">
+        <span className="requisite-icon">🏦</span>
+        <span className="requisite-label">Банк:</span>
+        <span className="requisite-value">{bank_name}</span>
+      </div>
+      
+      {card_number && (
+        <div className="requisite-item">
+          <span className="requisite-icon">🔢</span>
+          <span className="requisite-label">Карта:</span>
+          <span className="requisite-value">{formatCardNumber(card_number)}</span>
         </div>
-    )
-
-    return (
-        <div>
-            <p>{payment_system}</p>
-            <p>{bank_name}</p>
-            <p>{phone}</p>
-            <p>{owner}</p>
+      )}
+      
+      {phone && (
+        <div className="requisite-item">
+          <span className="requisite-icon">📱</span>
+          <span className="requisite-label">Телефон:</span>
+          <span className="requisite-value">{formatPhoneNumber(phone)}</span>
         </div>
-    )
-}
+      )}
+      
+      <div className="requisite-item">
+        <span className="requisite-icon">👤</span>
+        <span className="requisite-label">Владелец:</span>
+        <span className="requisite-value">{owner}</span>
+      </div>
+    </div>
+  );
+};
 
-const TimeLeft = ({expiresAt}) => {
-    const timeLeft = useMemo(() => {
-        const now = new Date();
-        const expires = new Date(expiresAt);
-        const diff = expires - now;
+// Форматирование номера карты
+const formatCardNumber = (number) => {
+  return number.replace(/(\d{4})/g, '$1 ').trim();
+};
+
+// Форматирование телефона
+const formatPhoneNumber = (phone) => {
+  const match = phone.match(/^\+7(\d{3})(\d{3})(\d{2})(\d{2})$/);
+  if (!match) return phone;
+  return `+7 (${match[1]}) ${match[2]}-${match[3]}-${match[4]}`;
+};
+
+const TimeLeft = ({ expiresAt }) => {
+  const [timeLeft, setTimeLeft] = useState("");
+  
+  useEffect(() => {
+    const calculateTimeLeft = () => {
+      const now = new Date();
+      const expires = new Date(expiresAt);
+      const diff = expires - now;
     
-        if (diff <= 0) return "Истекло";
+      if (diff <= 0) return "Истекло";
     
-        const seconds = Math.floor((diff / 1000) % 60);
-        const minutes = Math.floor((diff / (1000 * 60)) % 60);
-        const hours = Math.floor((diff / (1000 * 60 * 60)));
+      const seconds = Math.floor((diff / 1000) % 60);
+      const minutes = Math.floor((diff / (1000 * 60)) % 60);
+      const hours = Math.floor(diff / (1000 * 60 * 60));
     
-        return `${hours > 0 ? `${hours}ч ` : ""}${minutes}м ${seconds}с`;
-      }, [expiresAt]);
+      return `${hours > 0 ? `${hours}ч ` : ""}${minutes}м ${seconds}с`;
+    };
+
+    // Устанавливаем начальное значение
+    setTimeLeft(calculateTimeLeft());
+    
+    // Запускаем интервал для обновления каждую секунду
+    const timerId = setInterval(() => {
+      setTimeLeft(calculateTimeLeft());
+    }, 1000);
+
+    // Очищаем интервал при размонтировании компонента
+    return () => clearInterval(timerId);
+  }, [expiresAt]);
 
   return <span>{timeLeft}</span>;
-}
+};
 
-const TraderReward = ({amount_crypto, trader_reward}) => {
-    return (
-        <div>
-            <p>Процент: {trader_reward*100}%</p>
-            <p>{amount_crypto * trader_reward} USD</p>
-        </div>
-    )
-}
+const TraderReward = ({ amount_crypto, trader_reward }) => {
+  const rewardAmount = amount_crypto * trader_reward;
+  const rewardPercent = trader_reward * 100;
+  
+  return (
+    <div className="trader-reward-balanced">
+      <div className="reward-percent">
+        <div className="percent-value">{rewardPercent.toFixed(1)}%</div>
+        <div className="percent-label">ваша доля</div>
+      </div>
+      
+      <div className="reward-separator">→</div>
+      
+      <div className="reward-amount">
+        <div className="amount-value">{rewardAmount.toFixed(2)}</div>
+        <div className="amount-label">USDT</div>
+      </div>
+    </div>
+  );
+};
 
 const ApproveOrderModal = ({isOpen, onClose, onSuccess}) => {
     if (!isOpen) return null
@@ -60,6 +118,7 @@ const ApproveOrderModal = ({isOpen, onClose, onSuccess}) => {
     const handleOnSuccess = () => {
         onSuccess()
         onClose()
+        window.location.reload();
     }
 
     return (
@@ -75,6 +134,25 @@ const ApproveOrderModal = ({isOpen, onClose, onSuccess}) => {
     )
 }
 
+const DealAmount = ({ amount_fiat, amount_crypto, crypto_rub_rate, currency }) => {
+  return (
+    <div className="deal-amount">
+      <div className="fiat-amount">
+        <span className="icon">💵</span>
+        {amount_fiat} <span className="currency">{currency}</span>
+      </div>
+      <div className="crypto-amount">
+        <span className="icon"></span>
+        ≈ {amount_crypto} USDT
+      </div>
+      <div className="exchange-rate">
+        <span className="icon">🔁</span>
+        1 USDT = {crypto_rub_rate} {currency}
+      </div>
+    </div>
+  );
+};
+
 const ActiveOrdersTable = ({isOpen}) => {
     
     const [currentPage, setCurrentPage] = useState(1)
@@ -84,6 +162,9 @@ const ActiveOrdersTable = ({isOpen}) => {
     const [error, setError] = useState(null)
     const [isApproveModalOpen, setIsApproveModalOpen] = useState(false)
     const [orderID, setOrderID] = useState('')
+    const MemoizedTimeLeft = React.memo(TimeLeft);
+    const MemoizedRequisite = React.memo(Requisite);
+    const MemoizedTraderReward = React.memo(TraderReward);
 
     const [pagination, setPagination] = useState({
         page: 1,
@@ -134,21 +215,11 @@ const ActiveOrdersTable = ({isOpen}) => {
         setPagination({...pagination, page: newPage})
     }
 
-    const handleSort = (column) => {
-        setSorting(prev => ({
-          sortBy: column,
-          sortOrder: prev.sortBy === column && prev.sortOrder === 'asc' ? 'desc' : 'asc'
-        }));
-    };
-
-    const handleFilterChange = (name, value) => {
-        setFilters(prev => ({ ...prev, [name]: value }));
-        setPagination(prev => ({ ...prev, page: 1 })); // Сброс на первую страницу
-    };
-
     const handleApprove = async ({order_id}) => {
         const data = await approveTraderOrder({order_id})
     }
+
+    const MemoizedDealAmount = React.memo(DealAmount);
 
     if (!isOpen) return null
 
@@ -164,9 +235,7 @@ const ActiveOrdersTable = ({isOpen}) => {
                 <tr>
                     <th>ID</th>
                     <th>Реквизит</th>
-                    <th>Сумма в фиате</th>
-                    <th>Сумма в крипте</th>
-                    <th>Курс сделки</th>
+                    <th>Сумма сделки</th>
                     <th>Награда трейдера</th>
                     <th>Таймер</th>
                     <th>Статус</th>
@@ -182,14 +251,19 @@ const ActiveOrdersTable = ({isOpen}) => {
                     <td data-label="Реквизит">
                       <Requisite {...order.bank_detail} />
                     </td>
-                    <td data-label="Сумма в фиате">{order.amount_fiat}</td>
-                    <td data-label="Сумма в крипте">{order.amount_crypto}</td>
-                    <td data-label="Курс сделки">USD = {order.crypto_rub_rate} {order.bank_detail.currency}</td>
+                    <td data-label="Сумма сделки">
+                      <MemoizedDealAmount 
+                        amount_fiat={order.amount_fiat}
+                        amount_crypto={order.amount_crypto}
+                        crypto_rub_rate={order.crypto_rub_rate}
+                        currency={order.bank_detail.currency}
+                      />
+                    </td>
                     <td data-label="Награда">
                       <TraderReward amount_crypto={order.amount_crypto} trader_reward={order.trader_reward} />
                     </td>
                     <td data-label="Таймер">
-                      <TimeLeft expiresAt={order.expires_at} />
+                       <MemoizedTimeLeft expiresAt={order.expires_at} />
                     </td>
                     <td data-label="Статус">{order.status}</td>
                     <td data-label="">

@@ -1119,6 +1119,10 @@ const EditbankDetailsModal = ({isOpen, onClose, onSuccess, detail}) => {
                 setForm(prev => ({...prev, inflow_currency: 'RUB'}))
                 setInflowCurrencyVisible(false)
                 break
+                case 'C2C':
+                  setForm(prev => ({...prev, inflow_currency: 'RUB'}))
+                  setInflowCurrencyVisible(false)
+                  break                 
             case 'C2C_TJK':
                 setForm(prev => ({...prev, inflow_currency: 'TJK'}))
                 setInflowCurrencyVisible(false)
@@ -1183,6 +1187,58 @@ const EditbankDetailsModal = ({isOpen, onClose, onSuccess, detail}) => {
         sendData()
         window.location.reload();
     }
+
+    const formatPhoneNumber = (value) => {
+      // Оставляем только цифры
+      const cleaned = value.replace(/\D/g, '');
+      
+      // Ограничиваем длину (1 - код страны, 10 - номер)
+      const limited = cleaned.substring(0, 11);
+      
+      // Форматируем в человекочитаемый вид
+      const match = limited.match(/^(\d{0,1})(\d{0,3})(\d{0,3})(\d{0,2})(\d{0,2})$/);
+      
+      if (!match) return '';
+      
+      return [
+        '+7',
+        match[2] ? `(${match[2]}` : '',
+        match[3] ? `)${match[3]}` : '',
+        match[4] ? `-${match[4]}` : '',
+        match[5] ? `-${match[5]}` : ''
+      ].join('');
+    };
+  
+    // Обработчик изменений для телефонного номера
+    const handlePhoneChange = (e) => {
+      const rawValue = e.target.value.replace(/\D/g, '');
+      const phoneValue = rawValue.startsWith('7') || rawValue.startsWith('8') 
+        ? `+7${rawValue.substring(1, 11)}` 
+        : `+7${rawValue.substring(0, 10)}`;
+      
+      setForm(prev => ({
+        ...prev,
+        phone: phoneValue
+      }));
+    };
+
+      // Обработчик изменений для номера карты
+      const handleCardNumberChange = (e) => {
+        // Удаляем все нецифровые символы
+        const rawValue = e.target.value.replace(/\D/g, '');
+        // Ограничиваем длину 16 цифрами
+        const cardValue = rawValue.substring(0, 16);
+
+        setForm(prev => ({
+          ...prev,
+          card_number: cardValue
+        }));
+      };
+    
+      // Форматирование номера карты для отображения
+      const formatCardNumber = (value) => {
+        return value.replace(/(\d{4})/g, '$1 ').trim();
+      };
 
     return (
         <div className="modal-overlay">
@@ -1274,29 +1330,31 @@ const EditbankDetailsModal = ({isOpen, onClose, onSuccess, detail}) => {
                 </div>
 
                 {(form.payment_system === 'C2C') && <div className="bank-modal-row">
-                    <label htmlFor="card_number">Номер карты</label>
-                    <input
-                        name="card_number"
-                        id="card_number"
-                        type="text"
-                        placeholder="Номер карты"
-                        value={form.card_number}
-                        onChange={handleOnChange}
-                    />
+                  <label htmlFor="card_number">Номер карты</label>
+                  <input
+                    name="card_number"
+                    id="card_number"
+                    type="text"
+                    placeholder="0000 0000 0000 0000"
+                    value={formatCardNumber(form.card_number)}
+                    onChange={handleCardNumberChange}
+                    inputMode="numeric"
+                    pattern="[0-9\s]{13,19}"
+                  />
                 </div>}
 
                 { (form.payment_system === 'SBP' || form.payment_system === 'SBP_TJK' || form.payment_system === 'TRANSGRAN' && form.currency === 'RUB' && form.inflow_currency === 'TJS') 
                 && <div className="bank-modal-row">
-                    <label>Номер телефона</label>
-                    <input
+                      <label>Номер телефона</label>
+                      <input
                         name="phone"
                         id="phone"
                         type="text"
-                        placeholder="Номер телефона"
-                        value={form.phone}
-                        onChange={handleOnChange}
-                    />
-                </div>}
+                        placeholder="+7 (___) ___-__-__"
+                        value={formatPhoneNumber(form.phone)}
+                        onChange={handlePhoneChange}
+                      />
+                    </div>}
 
                 <div className="bank-modal-row">
                     <label htmlFor="owner">Имя владельца</label>
