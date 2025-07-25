@@ -60,33 +60,6 @@ const formatPhoneNumber = (phone) => {
   return `+7 (${match[1]}) ${match[2]}-${match[3]}-${match[4]}`;
 };
 
-const SumLimits = ({min_amount, max_amount, currency}) => {
-    return (
-        <div>
-            <p>От {min_amount} {currency}</p>
-            <p>До {max_amount} {currency}</p>
-        </div>
-    )
-} 
-
-const VolumeLimits = ({max_amount_day, max_amount_month, currency}) => {
-    return (
-        <div>
-            <p>В день: {max_amount_day} {currency}</p>
-            <p>В месяц: {max_amount_month} {currency}</p>
-        </div>
-    )
-}
-
-const QuantityLimits = ({max_quantity_day, max_quantity_month}) => {
-    return (
-        <div>
-            <p>Макс в день: {max_quantity_day}</p>
-            <p>Макс в месяц: {max_quantity_month}</p>
-        </div>
-    )
-}
-
 const ConfirmDeleteModal = ({ isOpen, onClose, onConfirm, bankName }) => {
   if (!isOpen) return null;
   
@@ -188,7 +161,9 @@ const StatusBadge = ({ enabled }) => {
 };
 
 const BankDetailsTable = () => {
-  const { bankDetails } = useTraderBankDetails()
+  
+  const { bankDetails, refetch: refetchBankDetails } = useTraderBankDetails();
+
   const [showModal, setShowModal] = useState(false)
   const [chosenDetail, setChoseonDetail] = useState(null)
   const [stats, setStats] = useState([])
@@ -226,7 +201,9 @@ const BankDetailsTable = () => {
       await deleteBankDetail({ bankDetailID: detailToDelete.id });
       toast.success("Реквизит успешно удален");
       // Здесь можно добавить обновление данных без перезагрузки страницы
-      window.location.reload(); // временное решение
+      refetchBankDetails(); // Обновляем список реквизитов
+      const statsRes = await getBankDetailsStats(traderID);
+      setStats(statsRes.data.stats);
     } catch (error) {
       toast.error("Ошибка при удалении реквизита");
       console.error("Delete error:", error);
@@ -240,73 +217,95 @@ const BankDetailsTable = () => {
     setShowDeleteModal(false);
     setDetailToDelete(null);
   }; 
+    // Обработчик успешного сохранения изменений
+    const handleEditSuccess = () => {
+      toast.success("Изменения сохранены");
+      setShowModal(false);
+      
+      // Обновляем данные без перезагрузки страницы
+      refetchBankDetails(); // Обновляем список реквизитов
+      
+      // Обновляем статистику
+      getBankDetailsStats(traderID)
+        .then(res => setStats(res.data.stats))
+        .catch(err => console.error("Ошибка при обновлении статистики", err));
+    };
 
-  return (
-    <>
-      <div className="bank-details-table-container">
-        <EditbankDetailsModal
-          isOpen={showModal}
-          onClose={() => setShowModal(false)}
-          onSuccess={() => {
-            toast.success("Изменения сохранены")
-            setShowModal(false)
-          }}
-          detail={chosenDetail}
-        />
-
-      <ConfirmDeleteModal
-          isOpen={showDeleteModal}
-          onClose={cancelDelete}
-          onConfirm={confirmDelete}
-          bankName={detailToDelete?.bank_name || ""}
-      />
-        <table>
-          <thead>
-            <tr>
-              <th>Реквизиты</th>
-              <th>Валюта</th>
-              <th>Лимиты</th>
-              <th>Статистика</th>
-              <th>Статус</th>
-              <th></th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            {bankDetails.map((detail) => {
-              const stat = stats.find((s) => s.bank_detail_id === detail.id)
-              return (
-                <tr key={detail.id}>
-                  <td><Requisite {...detail} /></td>
-                  <td>{detail.currency}</td>
-                  <td>
-                  <CombinedLimits 
-                    min_amount={detail.min_amount}
-                    max_amount={detail.max_amount}
-                    currency={detail.currency}
-                    max_amount_day={detail.max_amount_day}
-                    max_amount_month={detail.max_amount_month}
-                    max_quantity_day={detail.max_quantity_day}
-                    max_quantity_month={detail.max_quantity_month}
-                    max_orders_simultaneosly={detail.max_orders_simultaneosly}
-                  />
-                  </td>
-                  <td data-label="Статистика">
-                    <RequisiteStats stat={stat} detail={detail} />
-                  </td>
-                  <td data-label="Статус">
-                    <StatusBadge enabled={detail.enabled} />
-                  </td>
-                  <td data-label=""><button onClick={() => handleEdit(detail)}>Редактировать</button></td>
-                  <td data-label=""><button className="delete-btn" onClick={() => handleDeleteClick(detail)}>Удалить</button></td>
-                </tr>
-              )
-            })}
-          </tbody>
-        </table>
-      </div>
-    </>
-  )
-}
+    return (
+      <>
+        <div className="bank-details-table-container">
+          <EditbankDetailsModal
+            isOpen={showModal}
+            onClose={() => setShowModal(false)}
+            onSuccess={handleEditSuccess} // Передаем новый обработчик
+            detail={chosenDetail}
+          />
+  
+          <ConfirmDeleteModal
+            isOpen={showDeleteModal}
+            onClose={cancelDelete}
+            onConfirm={confirmDelete}
+            bankName={detailToDelete?.bank_name || ""}
+          />
+          
+          <table>
+            <thead>
+              <tr>
+                <th>Реквизиты</th>
+                <th>Валюта</th>
+                <th>Лимиты</th>
+                <th>Статистика</th>
+                <th>Статус</th>
+                <th></th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {bankDetails.map((detail) => {
+                const stat = stats.find((s) => s.bank_detail_id === detail.id);
+                return (
+                  <tr key={detail.id}>
+                    <td><Requisite {...detail} /></td>
+                    <td>{detail.currency}</td>
+                    <td>
+                      <CombinedLimits 
+                        min_amount={detail.min_amount}
+                        max_amount={detail.max_amount}
+                        currency={detail.currency}
+                        max_amount_day={detail.max_amount_day}
+                        max_amount_month={detail.max_amount_month}
+                        max_quantity_day={detail.max_quantity_day}
+                        max_quantity_month={detail.max_quantity_month}
+                        max_orders_simultaneosly={detail.max_orders_simultaneosly}
+                      />
+                    </td>
+                    <td data-label="Статистика">
+                      <RequisiteStats stat={stat} detail={detail} />
+                    </td>
+                    <td data-label="Статус">
+                      <StatusBadge enabled={detail.enabled} />
+                    </td>
+                    <td data-label="">
+                      <button onClick={() => handleEdit(detail)}>
+                        Редактировать
+                      </button>
+                    </td>
+                    <td data-label="">
+                      <button 
+                        className="delete-btn" 
+                        onClick={() => handleDeleteClick(detail)}
+                      >
+                        Удалить
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </>
+    );
+  };
 
 export default BankDetailsTable

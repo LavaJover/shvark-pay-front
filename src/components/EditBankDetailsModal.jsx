@@ -3,6 +3,7 @@ import { useAuth } from "../contexts/AuthContext"
 import { createBankDetail, updateBankDetail } from "../api/banking"
 import './Modal.css'
 import api from "../api/axios"
+import { toast } from "react-toastify"
 
 const EditbankDetailsModal = ({isOpen, onClose, onSuccess, detail}) => {
 
@@ -12,7 +13,7 @@ const EditbankDetailsModal = ({isOpen, onClose, onSuccess, detail}) => {
 
     const [form, setForm] = useState({
         id: detail.id,
-        trader_id: detail.traderID,
+        trader_id: traderID,
         currency: detail.currency,
         inflow_currency: detail.inflow_currency,
         payment_system: detail.payment_system,
@@ -277,13 +278,12 @@ const EditbankDetailsModal = ({isOpen, onClose, onSuccess, detail}) => {
       
       try {
         setLoading(true);
-        await createBankDetail(form);
+        await updateBankDetail(form);
         onSuccess();
         onClose();
-        toast.success('Реквизит успешно добавлен');
       } catch (error) {
-        console.error('Ошибка при создании реквизита:', error);
-        toast.error('Не удалось добавить реквизит');
+        console.error('Ошибка при редактировании реквизита:', error);
+        toast.error('Не удалось отредактировать реквизит');
       } finally {
         setLoading(false);
       }

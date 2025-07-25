@@ -1,0 +1,227 @@
+.history-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+  
+  .history-title {
+    color: #2c3e50;
+    text-align: center;
+    margin-bottom: 30px;
+    font-weight: 600;
+  }
+  
+  .pagination-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 15px;
+  }
+  
+  .items-per-page {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .items-per-page select {
+    padding: 8px 12px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+    background-color: white;
+    font-size: 14px;
+  }
+  
+  .table-responsive {
+    overflow-x: auto;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    border-radius: 8px;
+    margin-bottom: 25px;
+  }
+  
+  .transactions-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: white;
+  }
+  
+  .transactions-table th {
+    background-color: #f8f9fa;
+    padding: 16px 12px;
+    text-align: left;
+    font-weight: 600;
+    color: #495057;
+    border-bottom: 2px solid #e9ecef;
+  }
+  
+  .transactions-table td {
+    padding: 14px 12px;
+    border-bottom: 1px solid #e9ecef;
+    color: #212529;
+  }
+  
+  .transactions-table tr:hover {
+    background-color: #f8f9fa;
+  }
+  
+  .txn-type {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-weight: 500;
+  }
+  
+  .txn-type.deposit {
+    background-color: #d4edda;
+    color: #155724;
+  }
+  
+  .txn-type.withdraw {
+    background-color: #f8d7da;
+    color: #721c24;
+  }
+  
+  .txn-type.freeze, .txn-type.release {
+    background-color: #cce5ff;
+    color: #004085;
+  }
+  
+  .txn-type.reward {
+    background-color: #fff3cd;
+    color: #856404;
+  }
+  
+  .status-badge {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.85em;
+    display: inline-block;
+  }
+  
+  .status-badge.pending {
+    background-color: #ffeeba;
+    color: #856404;
+  }
+  
+  .status-badge.confirmed {
+    background-color: #c3e6cb;
+    color: #155724;
+  }
+  
+  .status-badge.failed {
+    background-color: #f5c6cb;
+    color: #721c24;
+  }
+  
+  .tx-link {
+    display: block;
+    color: #0d6efd;
+    text-decoration: none;
+    margin-bottom: 5px;
+  }
+  
+  .tx-link:hover {
+    text-decoration: underline;
+  }
+  
+  .order-id {
+    display: block;
+    font-size: 0.85em;
+    color: #6c757d;
+  }
+  
+  .pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-top: 20px;
+  }
+  
+  .pagination-btn {
+    padding: 8px 16px;
+    border: 1px solid #dee2e6;
+    background-color: white;
+    color: #0d6efd;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.2s;
+  }
+  
+  .pagination-btn:hover:not(:disabled) {
+    background-color: #e9ecef;
+  }
+  
+  .pagination-btn:disabled {
+    color: #6c757d;
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+  
+  .current-page {
+    padding: 0 15px;
+    font-size: 14px;
+    color: #495057;
+  }
+  
+  .loading-indicator {
+    text-align: center;
+    padding: 30px;
+    font-size: 18px;
+    color: #6c757d;
+  }
+  
+  .error-message {
+    text-align: center;
+    padding: 20px;
+    background-color: #f8d7da;
+    color: #721c24;
+    border-radius: 4px;
+    margin: 20px 0;
+  }
+  
+  .no-data {
+    text-align: center;
+    padding: 30px;
+    color: #6c757d;
+    font-style: italic;
+  }
+  
+  /* Адаптивность */
+  @media (max-width: 768px) {
+    .pagination-controls {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    
+    .transactions-table th, 
+    .transactions-table td {
+      padding: 10px 8px;
+      font-size: 14px;
+    }
+    
+    .pagination {
+      flex-wrap: wrap;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .history-container {
+      padding: 15px;
+    }
+    
+    .transactions-table {
+      font-size: 13px;
+    }
+    
+    .pagination-btn {
+      padding: 6px 12px;
+    }
+    
+    .current-page {
+      padding: 0 8px;
+    }
+  }

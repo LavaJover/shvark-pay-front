@@ -55,6 +55,27 @@ const formatPhoneNumber = (phone) => {
   return `+7 (${match[1]}) ${match[2]}-${match[3]}-${match[4]}`;
 };
 
+// ОБНОВЛЕННАЯ ФУНКЦИЯ ДЛЯ ФОРМАТИРОВАНИЯ ДАТЫ С УЧЕТОМ ЧАСОВОГО ПОЯСА КЛИЕНТА
+const formatDateTime = (dateString) => {
+  if (!dateString) return "";
+  
+  const date = new Date(dateString);
+  
+  // Проверка на валидность даты
+  if (isNaN(date.getTime())) return "Некорректная дата";
+  
+  // Форматируем с учетом локального времени пользователя
+  return date.toLocaleString('ru-RU', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    timeZoneName: 'short'
+  });
+};
+
 const DealAmount = ({ amount_fiat, amount_crypto, crypto_rub_rate, currency }) => {
   return (
     <div className="deal-amount">
@@ -137,13 +158,14 @@ export const CanceledOrdersTable = ({isOpen}) => {
 
     return (
         <div className="orders-container">
-
         <table>
             <thead>
                 <tr>
                     <th>ID</th>
                     <th>Реквизит</th>
                     <th>Сумма сделки</th>
+                    <th>Создана в</th>
+                    <th>Отменена в</th>
                     <th>Статус</th>
                 </tr>
             </thead>
@@ -170,15 +192,20 @@ export const CanceledOrdersTable = ({isOpen}) => {
                         currency={order.bank_detail.currency}
                       />
                     </td>
+                    <td data-label="Создана в">
+                      {formatDateTime(order.created_at)}
+                    </td>
+                    <td data-label="Отменена в">
+                      {formatDateTime(order.updated_at)}
+                    </td>
                     <td data-label="Статус">{order.status}</td>
                   </tr>
                 ))}
             </tbody>
-
         </table>
 
-                  {/* Пагинация */}
-            <div className="pagination">
+        {/* Пагинация */}
+        <div className="pagination">
             <button
               onClick={() => handlePageChange(pagination.page - 1)}
               disabled={pagination.page === 1}
@@ -187,7 +214,7 @@ export const CanceledOrdersTable = ({isOpen}) => {
             </button>
             
             <span>
-              Страница {pagination.page} из {Math.max (Math.ceil(pagination.total / pagination.limit, 1))}
+              Страница {pagination.page} из {Math.max(Math.ceil(pagination.total / pagination.limit), 1)}
             </span>
             
             <button
@@ -205,12 +232,12 @@ export const CanceledOrdersTable = ({isOpen}) => {
                 page: 1
               })}
             >
-               <option value="10">5 на странице</option> 
+              <option value="5">5 на странице</option>
               <option value="10">10 на странице</option>
               <option value="20">20 на странице</option>
               <option value="50">50 на странице</option>
             </select>
           </div>
-          </div>
+        </div>
     )
 }

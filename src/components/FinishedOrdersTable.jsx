@@ -55,6 +55,27 @@ const formatPhoneNumber = (phone) => {
   return `+7 (${match[1]}) ${match[2]}-${match[3]}-${match[4]}`;
 };
 
+// ОБНОВЛЕННАЯ ФУНКЦИЯ: форматирование даты с учётом часового пояса клиента
+const formatDateTime = (dateString) => {
+  if (!dateString) return "";
+  
+  const date = new Date(dateString);
+  
+  // Проверка на валидность даты
+  if (isNaN(date.getTime())) return "Некорректная дата";
+  
+  // Форматируем с учетом локального времени пользователя
+  return date.toLocaleString('ru-RU', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    timeZoneName: 'short'
+  });
+};
+
 const TraderReward = ({ amount_crypto, trader_reward }) => {
   const rewardAmount = amount_crypto * trader_reward;
   const rewardPercent = trader_reward * 100;
@@ -130,7 +151,7 @@ export const FinishedOrdersTable = ({isOpen}) => {
                 const params = {
                     page: pagination.page,
                     limit: pagination.limit,
-                    status: 'SUCCEED'
+                    status: 'COMPLETED'
                 }
 
                 const response = await api.get(`/orders/trader/${traderID}`, {params})
@@ -167,6 +188,8 @@ export const FinishedOrdersTable = ({isOpen}) => {
                     <th>Реквизит</th>
                     <th>Сумма сделки</th>
                     <th>Награда трейдера</th>
+                    <th>Создана в</th>
+                    <th>Завершена в</th>
                     <th>Статус</th>
                 </tr>
             </thead>
@@ -195,6 +218,12 @@ export const FinishedOrdersTable = ({isOpen}) => {
                     </td>
                     <td data-label="Награда">
                       <TraderReward amount_crypto={order.amount_crypto} trader_reward={order.trader_reward} />
+                    </td>
+                    <td data-label="Создана в">
+                      {formatDateTime(order.created_at)}
+                    </td>
+                    <td data-label="Завершена в">
+                      {formatDateTime(order.updated_at)}
                     </td>
                     <td data-label="Статус">{order.status}</td>
                   </tr>

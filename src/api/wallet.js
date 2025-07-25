@@ -11,7 +11,9 @@ export const fetchTraderWalletBalance = async ({ traderID }) => {
     return response.data
 }
 
-export const fetchTraderWalletHistory = async ({ traderID }) => {
-    const response = await api.get(`/wallets/${traderID}/history`)
-    return response.data
-}
+export const fetchTraderWalletHistory = async ({ traderID, queryParams = {} }) => {
+    const response = await api.get(`/wallets/${traderID}/history`, {
+      params: queryParams
+    });
+    return response.data;
+  };

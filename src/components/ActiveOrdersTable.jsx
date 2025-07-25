@@ -191,7 +191,7 @@ const ActiveOrdersTable = ({isOpen}) => {
                 const params = {
                     page: pagination.page,
                     limit: pagination.limit,
-                    status: "CREATED"
+                    status: "PENDING"
                 }
 
                 const response = await api.get(`/orders/trader/${traderID}`, {params})

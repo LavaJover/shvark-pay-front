@@ -281,3 +281,328 @@
     border-radius: 4px;
   }
   
+  /* Стили для карточки реквизитов */
+.bank-details-card {
+  background-color: #f8f9fa;
+  border-radius: 6px;
+  padding: 10px;
+  font-size: 0.85rem;
+  border-left: 3px solid #6c757d;
+  min-width: 200px;
+}
+
+.bank-row {
+  display: flex;
+  margin-bottom: 4px;
+}
+
+.bank-row:last-child {
+  margin-bottom: 0;
+}
+
+.bank-label {
+  font-weight: 500;
+  min-width: 75px;
+  color: #495057;
+}
+
+.bank-value {
+  flex: 1;
+  word-break: break-word;
+}
+
+/* Существующие стили остаются без изменений */
+
+/* Стили для карточки суммы сделки */
+.amount-card {
+  background-color: #f1f8ff;
+  border-radius: 6px;
+  padding: 10px;
+  font-size: 0.85rem;
+  border-left: 3px solid #4dabf7;
+  min-width: 120px;
+}
+
+.amount-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 5px;
+}
+
+.amount-row:last-child {
+  margin-bottom: 0;
+}
+
+.amount-label {
+  font-weight: 500;
+  color: #495057;
+}
+
+.amount-value {
+  font-weight: 500;
+  color: #1864ab;
+  text-align: right;
+}
+
+/* Адаптивность */
+@media (max-width: 1200px) {
+  .orders-table {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 992px) {
+  .orders-table th,
+  .orders-table td {
+    padding: 10px 12px;
+  }
+  
+  .time-cell {
+    min-width: 200px;
+  }
+  
+  .amount-card {
+    min-width: 110px;
+  }
+}
+
+@media (max-width: 768px) {
+  .filters {
+    grid-template-columns: 1fr;
+  }
+  
+  .orders-table {
+    font-size: 0.85rem;
+  }
+  
+  .orders-table th,
+  .orders-table td {
+    padding: 8px 10px;
+  }
+  
+  .bank-details-card,
+  .amount-card {
+    padding: 6px;
+    font-size: 0.8rem;
+  }
+  
+  .bank-label {
+    min-width: 65px;
+  }
+  
+  .time-cell {
+    min-width: 180px;
+  }
+  
+  .amount-row {
+    flex-direction: column;
+  }
+  
+  .amount-label {
+    margin-bottom: 2px;
+    font-size: 0.75rem;
+  }
+  
+  .amount-value {
+    text-align: left;
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .filter-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .pagination {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .modal {
+    width: 95%;
+    padding: 15px;
+  }
+  
+  .bank-details-card,
+  .amount-card {
+    padding: 5px;
+    font-size: 0.75rem;
+  }
+  
+  .bank-label {
+    min-width: 55px;
+  }
+  
+  .time-cell {
+    min-width: 160px;
+  }
+}
+
+@media (max-width: 480px) {
+  .orders-table {
+    font-size: 0.8rem;
+  }
+  
+  .orders-table th,
+  .orders-table td {
+    padding: 6px 8px;
+  }
+  
+  .bank-details-card,
+  .amount-card {
+    padding: 4px;
+    font-size: 0.7rem;
+  }
+  
+  .bank-label {
+    min-width: 50px;
+  }
+  
+  .amount-row {
+    flex-wrap: wrap;
+  }
+}
+
+/* Компактные стили для времени */
+.time-container {
+  font-size: 0.75rem;
+  line-height: 1.3;
+}
+
+.time-row {
+  display: flex;
+  margin-bottom: 2px;
+}
+
+.time-row:last-child {
+  margin-bottom: 0;
+}
+
+.time-label {
+  font-weight: 500;
+  color: #495057;
+  min-width: 28px;
+  text-align: left;
+}
+
+.time-value {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.time-cell {
+  min-width: 120px;
+  max-width: 140px;
+  vertical-align: top;
+}
+
+/* Адаптивность для времени */
+@media (max-width: 1200px) {
+  .time-cell {
+    min-width: 115px;
+    max-width: 130px;
+  }
+}
+
+@media (max-width: 992px) {
+  .time-container {
+    font-size: 0.7rem;
+  }
+  
+  .time-cell {
+    min-width: 105px;
+    max-width: 120px;
+  }
+  
+  .time-label {
+    min-width: 25px;
+  }
+}
+
+@media (max-width: 768px) {
+  .time-container {
+    font-size: 0.65rem;
+  }
+  
+  .time-cell {
+    min-width: 95px;
+    max-width: 110px;
+  }
+  
+  .time-label {
+    min-width: 23px;
+  }
+}
+
+@media (max-width: 576px) {
+  .time-container {
+    font-size: 0.6rem;
+  }
+  
+  .time-cell {
+    min-width: 85px;
+    max-width: 100px;
+  }
+  
+  .time-label {
+    min-width: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .time-container {
+    font-size: 0.55rem;
+  }
+  
+  .time-cell {
+    min-width: 75px;
+    max-width: 90px;
+  }
+  
+  .time-label {
+    min-width: 18px;
+  }
+  
+  .time-value {
+    font-size: 0.6rem;
+  }
+}
+
+/* Оптимизация для таблицы */
+.orders-table th:nth-child(6),
+.orders-table th:nth-child(7) {
+  min-width: 120px;
+}
+
+/* Оптимизация статуса */
+.status-cell {
+  min-width: 100px;
+}
+
+@media (max-width: 768px) {
+  .status-cell {
+    min-width: 80px;
+  }
+  
+  .dispute-btn {
+    font-size: 0.7rem;
+    padding: 3px 6px;
+  }
+}
+
+/* Оптимизация таймера */
+.orders-table td:nth-child(8) {
+  min-width: 70px;
+  font-size: 0.85rem;
+}
+
+@media (max-width: 768px) {
+  .orders-table td:nth-child(8) {
+    font-size: 0.75rem;
+    min-width: 60px;
+  }
+}

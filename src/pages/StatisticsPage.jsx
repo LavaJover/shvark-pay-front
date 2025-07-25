@@ -4,10 +4,14 @@ import "./StatisticsPage.css"
 import api from "../api/axios"
 
 const StatisticsPage = () => {
-  const [dateRange, setDateRange] = useState({
-    from: new Date(),
-    to: new Date(),
-  })
+  const [dateRange, setDateRange] = useState(() => {
+    const now = new Date();
+    const from = new Date(now);
+    from.setHours(0, 0, 0, 0);
+    const to = new Date(now);
+    to.setHours(23, 59, 59, 999);
+    return { from, to };
+  });
 
   const [stats, setStats] = useState(null)
   const [loading, setLoading] = useState(false)
