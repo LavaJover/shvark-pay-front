@@ -23,7 +23,7 @@ const AdminPanel = () => {
               <Link to="/admin/merchants" onClick={() => setMenuOpen(false)}>Мерчанты</Link>
             </li>
             <li className={location.pathname.includes('/admin/traffic') ? 'active' : ''}>
-              <Link to="/admin/traffic" onClick={() => setMenuOpen(false)}>Траффик</Link>
+              <Link to="/admin/traffic" onClick={() => setMenuOpen(false)}>Трафик</Link>
             </li>
             <li className={location.pathname.includes('/admin/wallets') ? 'active' : ''}>
               <Link to="/admin/wallets" onClick={() => setMenuOpen(false)}>Кошельки</Link>
@@ -39,6 +39,9 @@ const AdminPanel = () => {
             </li>
             <li className={location.pathname.includes('/admin/settle-settings') ? 'active' : ''}>
               <Link to="/admin/settle-settings" onClick={() => setMenuOpen(false)}>Settle-settings</Link>
+            </li>
+            <li className={location.pathname.includes('/admin/teamleads') ? 'active' : ''}>
+              <Link to="/admin/teamleads" onClick={() => setMenuOpen(false)}>Команды</Link>
             </li>
           </ul>
         </nav>

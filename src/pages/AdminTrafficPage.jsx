@@ -37,13 +37,22 @@ const AdminTrafficPage = () => {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const [traderRes, merchantRes, trafficRes] = await Promise.all([
-        api.get("/admin/traders"),
-        api.get("/admin/merchants"),
-        api.get("/admin/traffic/records?page=1&limit=100"),
+      // Получаем мерчантов, трейдеров и тимлидов
+      const [merchantRes, traderRes, teamLeadRes, trafficRes] = await Promise.all([
+        api.get("/admin/users?role=MERCHANT"),
+        api.get("/admin/users?role=TRADER"),
+        api.get("/admin/users?role=TEAM_LEAD"),
+        api.get("/admin/traffic/records?page=1&limit=100")
       ]);
-      setTraders(traderRes.data.users);
+      
+      // Объединяем трейдеров и тимлидов в один список
+      const allTraders = [
+        ...traderRes.data.users,
+        ...teamLeadRes.data.users
+      ];
+      
       setMerchants(merchantRes.data.users);
+      setTraders(allTraders);
       setTrafficList(trafficRes.data.traffic_records || []);
     } catch (err) {
       toast.error("Ошибка при загрузке данных");

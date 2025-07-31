@@ -10,7 +10,6 @@ const statusOptions = [
   "DISPUTE"
 ];
 
-// Новый компонент для отображения таймера с автообновлением
 const Timer = ({ expiresAt }) => {
   const [timeLeft, setTimeLeft] = useState("-");
 
@@ -32,13 +31,8 @@ const Timer = ({ expiresAt }) => {
       setTimeLeft(`${minutes}м ${seconds}с`);
     };
 
-    // Первоначальное обновление
     updateTimer();
-    
-    // Запускаем интервал обновления каждую секунду
     const intervalId = setInterval(updateTimer, 1000);
-    
-    // Очистка интервала при размонтировании компонента
     return () => clearInterval(intervalId);
   }, [expiresAt]);
 
@@ -65,14 +59,23 @@ const AdminTraderOrdersPage = () => {
 
   const fetchUsers = async () => {
     try {
-      const [tradersRes, merchantsRes] = await Promise.all([
-        api.get("/admin/traders"),
-        api.get("/admin/merchants"),
+      // Получаем трейдеров, тимлидов и мерчантов параллельно
+      const [tradersRes, teamLeadsRes, merchantsRes] = await Promise.all([
+        api.get("/admin/users?role=TRADER"),
+        api.get("/admin/users?role=TEAM_LEAD"),
+        api.get("/admin/users?role=MERCHANT"),
       ]);
-      setTraders(tradersRes.data.users || []);
+
+      // Объединяем трейдеров и тимлидов в один список
+      const combinedTraders = [
+        ...(tradersRes.data.users || []),
+        ...(teamLeadsRes.data.users || [])
+      ];
+
+      setTraders(combinedTraders);
       setMerchants(merchantsRes.data.users || []);
     } catch (e) {
-      toast.error("Ошибка при загрузке списка трейдеров или мерчантов");
+      toast.error("Ошибка при загрузке списка пользователей");
       console.error(e);
     }
   };
@@ -160,14 +163,11 @@ const AdminTraderOrdersPage = () => {
     );
     
     const date = new Date(dateString);
-    
-    // UTC время - более компактный формат
     const utcHours = String(date.getUTCHours()).padStart(2, '0');
     const utcMinutes = String(date.getUTCMinutes()).padStart(2, '0');
     const utcDate = `${String(date.getUTCDate()).padStart(2, '0')}.${String(date.getUTCMonth() + 1).padStart(2, '0')}`;
     const utcTime = `${utcHours}:${utcMinutes}`;
     
-    // Локальное время - компактный формат
     const localDate = date.toLocaleDateString(undefined, {
       day: '2-digit',
       month: '2-digit'
