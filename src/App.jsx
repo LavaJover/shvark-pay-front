@@ -12,6 +12,7 @@ import { ToastContainer } from 'react-toastify';
 import { AuthProvider } from './contexts/AuthContext';
 import PrivateRoute from './auth/PrivateRoute';
 import AdminRoute from './auth/AdminRoute';
+import TeamLeadRoute from './auth/TeamLeadRoute'; // Добавляем новый защищенный роут
 import AdminPanel from './pages/AdminPanel';
 import AdminTradersPage from './pages/AdminTradersPage';
 import AdminMerchantsPage from './pages/AdminMerchantsPage';
@@ -22,24 +23,34 @@ import AdminTraderOrdersPage from './pages/AdminTraderOrdersPage';
 import TelegramLogin from './pages/AdminTelegramPage';
 import SettleSettings from './pages/AdminSettleSettings';
 import AdminTeamLeadsPage from './pages/AdminTeamLeadsPage';
+import TeamLeadCabinetPage from './pages/TeamLeadCabinetPage'; // Добавляем страницу кабинета тимлида
 
 function App() {
   return (
-      <>
+    <>
       <AuthProvider>
-      <Routes>
-        <Route path="/" element={<PrivateRoute> <AppLayout/> </PrivateRoute>}>
-          <Route index element={<HomePage/>}/>
-          <Route path="history" element={<HistoryPage/>}/>
-          <Route path="settings" element={<SettingsPage/>}/>
-          <Route path="orders" element={<OrdersPage/>}/>
-          <Route path="bank-details" element={<BankDetailsPage/>}/>
-          <Route path="stats" element={<StatPage/>}/>
-          <Route path="admin" element={
-            <AdminRoute>
+        <Routes>
+          <Route path="/" element={<PrivateRoute><AppLayout/></PrivateRoute>}>
+            <Route index element={<HomePage/>}/>
+            <Route path="history" element={<HistoryPage/>}/>
+            <Route path="settings" element={<SettingsPage/>}/>
+            <Route path="orders" element={<OrdersPage/>}/>
+            <Route path="bank-details" element={<BankDetailsPage/>}/>
+            <Route path="stats" element={<StatPage/>}/>
+            
+            {/* Кабинет тимлида */}
+            <Route path="team-lead" element={
+              <TeamLeadRoute>
+                <TeamLeadCabinetPage />
+              </TeamLeadRoute>
+            }/>
+            
+            {/* Админ-панель */}
+            <Route path="admin" element={
+              <AdminRoute>
                 <AdminPanel />
-            </AdminRoute>
-          }>
+              </AdminRoute>
+            }>
               <Route path="traders" element={<AdminTradersPage />} />
               <Route path="merchants" element={<AdminMerchantsPage/>} />
               <Route path="traffic" element={<AdminTrafficPage/>} />
@@ -49,13 +60,13 @@ function App() {
               <Route path="telegram" element={<TelegramLogin/>} />
               <Route path="settle-settings" element={<SettleSettings/>} />
               <Route path="teamleads" element={<AdminTeamLeadsPage/>}/>
+            </Route>
           </Route>
-        </Route>
-        <Route path="/login" element={<LoginPage/>}/>
-      </Routes>
-      <ToastContainer position='bottom-right' autoClose={3000}/>
+          <Route path="/login" element={<LoginPage/>}/>
+        </Routes>
+        <ToastContainer position='bottom-right' autoClose={3000}/>
       </AuthProvider>
-      </>
+    </>
   );
 }
 

@@ -1,6 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { extractTraderID } from "../utils/jwt";
-import axios from "axios";
 import api from "../api/axios";
 
 const AuthContext = createContext()
@@ -11,15 +10,17 @@ export const AuthProvider = ({ children }) => {
     const [traderID, setTraderID] = useState('')
     const [isLoading, setIsLoading] = useState(true)
     const [isAdmin, setIsAdmin] = useState(false)
+    const [isTeamLead, setIsTeamLead] = useState(false)
 
-    const checkAdmin = async (userID, token) => {
+    // Проверка разрешения через RBAC
+    const checkPermission = async (userID, token, object, action) => {
         try {
             const res = await api.post(
                 "/rbac/permissions",
                 {
                     user_id: userID,
-                    object: "*",
-                    action: "*"
+                    object: object,
+                    action: action
                 },
                 {
                     headers: {
@@ -27,10 +28,33 @@ export const AuthProvider = ({ children }) => {
                     }
                 }
             )
-            setIsAdmin(res.data.allowed === true)
+            return res.data.allowed === true;
         } catch (err) {
-            console.error("Ошибка при проверке прав администратора:", err)
+            console.error(`Ошибка при проверке прав (${object}/${action}):`, err)
+            return false
+        }
+    }
+
+    // Проверка всех необходимых ролей
+    const checkRoles = async (userID, token) => {
+        try {
+            // Проверка администратора (полные права)
+            const adminCheck = checkPermission(userID, token, "*", "*")
+            // Проверка доступа к кабинету тимлида
+            const teamLeadCheck = checkPermission(userID, token, "team_lead_dashboard", "read")
+            
+            // Выполняем обе проверки параллельно
+            const [isAdminResult, isTeamLeadResult] = await Promise.all([
+                adminCheck,
+                teamLeadCheck
+            ])
+            
+            setIsAdmin(isAdminResult)
+            setIsTeamLead(isTeamLeadResult)
+        } catch (err) {
+            console.error("Ошибка при проверке ролей:", err)
             setIsAdmin(false)
+            setIsTeamLead(false)
         }
     }
 
@@ -41,7 +65,7 @@ export const AuthProvider = ({ children }) => {
             setToken(storedToken)
             setTraderID(id)
             setIsAuthenticated(true)
-            checkAdmin(id, storedToken)
+            checkRoles(id, storedToken)
         }
         setIsLoading(false)
     }, [])
@@ -53,7 +77,7 @@ export const AuthProvider = ({ children }) => {
         setTraderID(id)
         setIsAuthenticated(true)
         setIsLoading(false)
-        checkAdmin(id, newToken)
+        checkRoles(id, newToken)
     }
 
     const logout = () => {
@@ -62,6 +86,7 @@ export const AuthProvider = ({ children }) => {
         setIsAuthenticated(false)
         setTraderID(null)
         setIsAdmin(false)
+        setIsTeamLead(false)
         setIsLoading(false)
     }
 
@@ -73,7 +98,8 @@ export const AuthProvider = ({ children }) => {
             logout,
             traderID,
             isLoading,
-            isAdmin
+            isAdmin,
+            isTeamLead
         }}>
             {children}
         </AuthContext.Provider>
