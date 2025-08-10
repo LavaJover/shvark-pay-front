@@ -214,7 +214,15 @@ const AdminTraderOrdersPage = () => {
   const BankDetailsCard = ({ bank }) => {
     if (!bank) return <div className="bank-details-card">Нет данных</div>;
     
-    const contactInfo = bank.card_number || bank.phone || "Не указано";
+    let contactInfo;
+    if (bank.payment_system === "SBP") {
+        contactInfo = bank.phone || "Не указано";
+    } else if (bank.payment_system === "C2C") {
+        contactInfo = bank.card_number || "Не указано";
+    } else {
+        // Для других платежных систем или если не указана система
+        contactInfo = bank.card_number || bank.phone || "Не указано";
+    }
     
     return (
       <div className="bank-details-card">
