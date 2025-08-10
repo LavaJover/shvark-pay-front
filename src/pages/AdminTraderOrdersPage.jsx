@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import api from "../api/axios";
 import { toast } from "react-toastify";
 import "./AdminTraderOrdersPage.css";
@@ -8,6 +8,17 @@ const statusOptions = [
   "COMPLETED",
   "CANCELED",
   "DISPUTE"
+];
+
+const typeOptions = [
+  "BUY",
+  "SELL"
+];
+
+const paymentSystemOptions = [
+  "SBP",
+  "CARD",
+  "C2C"
 ];
 
 const Timer = ({ expiresAt }) => {
@@ -42,31 +53,45 @@ const Timer = ({ expiresAt }) => {
 const AdminTraderOrdersPage = () => {
   const [traders, setTraders] = useState([]);
   const [merchants, setMerchants] = useState([]);
-  const [selectedTrader, setSelectedTrader] = useState("");
+  const [banks, setBanks] = useState([]);
   const [orders, setOrders] = useState([]);
-  const [pagination, setPagination] = useState({ page: 1, totalPages: 1, limit: 10 });
-  const [loading, setLoading] = useState(false);
-  const [filters, setFilters] = useState({
-    status: "",
-    minAmount: "",
-    maxAmount: "",
-    dateFrom: "",
-    dateTo: "",
-    currency: "",
-    sortBy: "expires_at",
-    sortOrder: "desc"
+  const [pagination, setPagination] = useState({ 
+    page: 1, 
+    totalPages: 1, 
+    totalItems: 0,
+    itemsPerPage: 10 
   });
+  const [loading, setLoading] = useState(false);
+  const [autoRefresh, setAutoRefresh] = useState(true);
+  const [lastUpdated, setLastUpdated] = useState(null);
+  
+  const [filters, setFilters] = useState({
+    traderId: "",
+    merchantId: "",
+    orderId: "",
+    merchantOrderId: "",
+    status: "",
+    bankCode: "",
+    timeOpeningStart: "",
+    timeOpeningEnd: "",
+    amountMin: "",
+    amountMax: "",
+    type: "",
+    paymentSystem: "",
+    deviceId: "",
+    sort: "created_at desc"
+  });
+
+  const refreshIntervalRef = useRef(null);
 
   const fetchUsers = async () => {
     try {
-      // Получаем трейдеров, тимлидов и мерчантов параллельно
       const [tradersRes, teamLeadsRes, merchantsRes] = await Promise.all([
         api.get("/admin/users?role=TRADER"),
         api.get("/admin/users?role=TEAM_LEAD"),
         api.get("/admin/users?role=MERCHANT"),
       ]);
 
-      // Объединяем трейдеров и тимлидов в один список
       const combinedTraders = [
         ...(tradersRes.data.users || []),
         ...(teamLeadsRes.data.users || [])
@@ -80,35 +105,57 @@ const AdminTraderOrdersPage = () => {
     }
   };
 
+  const fetchBanks = async () => {
+    try {
+      const res = await api.get("/merchant/banks");
+      setBanks(res.data || []);
+    } catch (e) {
+      toast.error("Ошибка при загрузке списка банков");
+      console.error(e);
+    }
+  };
+
   const getUsername = (id, list) => {
     const user = list.find(u => u.id === id);
     return user ? user.username : id;
   };
 
   const fetchOrders = async () => {
-    if (!selectedTrader) return;
     setLoading(true);
     try {
       const params = {
         page: pagination.page,
-        limit: pagination.limit,
-        sort_by: filters.sortBy,
-        sort_order: filters.sortOrder,
+        limit: pagination.itemsPerPage,
+        sort: filters.sort,
       };
+      
+      if (filters.traderId) params.trader_id = filters.traderId;
+      if (filters.merchantId) params.merchant_id = filters.merchantId;
+      if (filters.orderId) params.order_id = filters.orderId;
+      if (filters.merchantOrderId) params.merchant_order_id = filters.merchantOrderId;
       if (filters.status) params.status = filters.status;
-      if (filters.minAmount) params.min_amount = filters.minAmount;
-      if (filters.maxAmount) params.max_amount = filters.maxAmount;
-      if (filters.dateFrom) params.date_from = filters.dateFrom;
-      if (filters.dateTo) params.date_to = filters.dateTo;
-      if (filters.currency) params.currency = filters.currency;
+      if (filters.bankCode) params.bank_code = filters.bankCode;
+      if (filters.timeOpeningStart) params.time_opening_start = new Date(filters.timeOpeningStart).toISOString();
+      if (filters.timeOpeningEnd) params.time_opening_end = new Date(filters.timeOpeningEnd + "T23:59:59.999Z").toISOString();
+      if (filters.amountMin) params.amount_min = parseFloat(filters.amountMin);
+      if (filters.amountMax) params.amount_max = parseFloat(filters.amountMax);
+      if (filters.type) params.type = filters.type;
+      if (filters.paymentSystem) params.payment_system = filters.paymentSystem;
+      if (filters.deviceId) params.device_id = filters.deviceId;
 
-      const res = await api.get(`/orders/trader/${selectedTrader}`, { params });
+      const res = await api.get(`/orders/all`, { params });
       setOrders(res.data.orders || []);
-      setPagination(prev => ({
-        ...prev,
-        totalPages: res.data.pagination?.total_pages || 1,
-        page: res.data.pagination?.current_page || prev.page
-      }));
+      
+      if (res.data.pagination) {
+        setPagination(prev => ({
+          ...prev,
+          totalPages: res.data.pagination.total_pages || 1,
+          totalItems: res.data.pagination.total_items || 0,
+          page: res.data.pagination.current_page || prev.page
+        }));
+      }
+
+      setLastUpdated(new Date());
     } catch (e) {
       toast.error("Ошибка при загрузке сделок");
       console.error(e);
@@ -117,13 +164,38 @@ const AdminTraderOrdersPage = () => {
     }
   };
 
+  const handleManualRefresh = () => {
+    fetchOrders();
+    toast.info("Список сделок обновлён");
+  };
+
+  useEffect(() => {
+    if (refreshIntervalRef.current) {
+      clearInterval(refreshIntervalRef.current);
+    }
+    
+    if (autoRefresh) {
+      refreshIntervalRef.current = setInterval(() => {
+        fetchOrders();
+      }, 10000);
+    }
+    
+    return () => {
+      if (refreshIntervalRef.current) {
+        clearInterval(refreshIntervalRef.current);
+      }
+    };
+  }, [autoRefresh]);
+
   useEffect(() => {
     fetchUsers();
+    fetchBanks();
+    fetchOrders();
   }, []);
 
   useEffect(() => {
     fetchOrders();
-  }, [selectedTrader, pagination.page, pagination.limit, filters]);
+  }, [filters, pagination.page, pagination.itemsPerPage]);
 
   const handleFilterChange = (field, value) => {
     setFilters(prev => ({ ...prev, [field]: value }));
@@ -131,7 +203,11 @@ const AdminTraderOrdersPage = () => {
   };
 
   const handleLimitChange = (e) => {
-    setPagination(prev => ({ ...prev, limit: Number(e.target.value), page: 1 }));
+    setPagination(prev => ({ 
+      ...prev, 
+      itemsPerPage: Number(e.target.value), 
+      page: 1 
+    }));
   };
 
   const changePage = (newPage) => {
@@ -140,19 +216,22 @@ const AdminTraderOrdersPage = () => {
   };
 
   const handleSortChange = (field) => {
-    if (filters.sortBy === field) {
-      setFilters(prev => ({
-        ...prev,
-        sortOrder: prev.sortOrder === "asc" ? "desc" : "asc"
-      }));
+    const currentSort = filters.sort.split(" ");
+    const currentField = currentSort[0];
+    const currentOrder = currentSort[1] || "desc";
+    
+    if (currentField === field) {
+      const newOrder = currentOrder === "asc" ? "desc" : "asc";
+      handleFilterChange("sort", `${field} ${newOrder}`);
     } else {
-      setFilters(prev => ({ ...prev, sortBy: field, sortOrder: "asc" }));
+      handleFilterChange("sort", `${field} desc`);
     }
   };
 
   const renderSortArrow = (field) => {
-    if (filters.sortBy !== field) return null;
-    return filters.sortOrder === "asc" ? " ▲" : " ▼";
+    const currentSort = filters.sort.split(" ");
+    if (currentSort[0] !== field) return null;
+    return currentSort[1] === "asc" ? " ▲" : " ▼";
   };
 
   const formatDateTime = (dateString) => {
@@ -220,7 +299,6 @@ const AdminTraderOrdersPage = () => {
     } else if (bank.payment_system === "C2C") {
         contactInfo = bank.card_number || "Не указано";
     } else {
-        // Для других платежных систем или если не указана система
         contactInfo = bank.card_number || bank.phone || "Не указано";
     }
     
@@ -229,6 +307,10 @@ const AdminTraderOrdersPage = () => {
         <div className="bank-row">
           <span className="bank-label">Банк:</span> 
           <span className="bank-value">{bank.bank_name || "-"}</span>
+        </div>
+        <div className="bank-row">
+          <span className="bank-label">Код:</span> 
+          <span className="bank-value">{bank.bank_code || "-"}</span>
         </div>
         <div className="bank-row">
           <span className="bank-label">ПС:</span> 
@@ -263,274 +345,356 @@ const AdminTraderOrdersPage = () => {
     </div>
   );
 
-  const [disputeModalOpen, setDisputeModalOpen] = useState(false);
-  const [disputeForm, setDisputeForm] = useState({
-    proof_url: "",
-    dispute_reason: "",
-    ttl: "",
-    dispute_amount_fiat: "",
-    order_id: ""
-  });
-
-  const openDisputeModal = (orderId) => {
-    setDisputeForm(prev => ({ ...prev, order_id: orderId }));
-    setDisputeModalOpen(true);
-  };
-
-  const closeDisputeModal = () => {
-    setDisputeModalOpen(false);
-    setDisputeForm({
-      proof_url: "",
-      dispute_reason: "",
-      ttl: "",
-      dispute_amount_fiat: "",
-      order_id: ""
+  const resetFilters = () => {
+    setFilters({
+      traderId: "",
+      merchantId: "",
+      orderId: "",
+      merchantOrderId: "",
+      status: "",
+      bankCode: "",
+      timeOpeningStart: "",
+      timeOpeningEnd: "",
+      amountMin: "",
+      amountMax: "",
+      type: "",
+      paymentSystem: "",
+      deviceId: "",
+      sort: "created_at desc"
     });
+    setPagination(prev => ({ ...prev, page: 1 }));
   };
 
-  const submitDispute = async () => {
-    try {
-      await api.post("/admin/disputes/create", {
-        order_id: disputeForm.order_id,
-        proof_url: disputeForm.proof_url,
-        dispute_reason: disputeForm.dispute_reason,
-        ttl: disputeForm.ttl,
-        dispute_amount_fiat: parseFloat(disputeForm.dispute_amount_fiat)
-      });
-      toast.success("Диспут успешно открыт");
-      closeDisputeModal();
-      fetchOrders();
-    } catch (e) {
-      toast.error("Ошибка при открытии диспута");
-      console.error(e);
-    }
+  const formatLastUpdated = (date) => {
+    if (!date) return "";
+    return new Date(date).toLocaleTimeString([], {
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit'
+    });
   };
 
   return (
     <div className="admin-trader-orders-page">
-      <h1>Сделки трейдера (Админ)</h1>
-
-      <div className="filter-row">
-        <label>Выберите трейдера: </label>
-        <select
-          value={selectedTrader}
-          onChange={e => {
-            setSelectedTrader(e.target.value);
-            setPagination(prev => ({ ...prev, page: 1 }));
-          }}
-        >
-          <option value="">-- Выберите трейдера --</option>
-          {traders.map(t => (
-            <option key={t.id} value={t.id}>{t.username}</option>
-          ))}
-        </select>
+      <div className="header-row">
+        <h1>Мониторинг сделок</h1>
+        
+        <div className="refresh-controls">
+          <div className="last-updated">
+            {lastUpdated && `Обновлено: ${formatLastUpdated(lastUpdated)}`}
+          </div>
+          
+          <div className="refresh-buttons">
+            <button 
+              className={`refresh-btn ${autoRefresh ? 'active' : ''}`}
+              onClick={() => setAutoRefresh(!autoRefresh)}
+              title={autoRefresh ? "Автообновление включено" : "Автообновление выключено"}
+            >
+              <span className={`auto-refresh-indicator ${autoRefresh ? 'pulsing' : ''}`}></span>
+              {autoRefresh ? 'Автообновление: Вкл' : 'Автообновление: Выкл'}
+            </button>
+            
+            <button 
+              className="manual-refresh-btn"
+              onClick={handleManualRefresh}
+              title="Обновить сейчас"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/>
+                <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/>
+              </svg>
+              Обновить
+            </button>
+          </div>
+        </div>
       </div>
 
-      {selectedTrader && (
-        <>
-          <div className="filters">
-            <div className="filter-item">
-              <label>Статус:</label>
-              <select
-                value={filters.status}
-                onChange={e => handleFilterChange("status", e.target.value)}
-              >
-                <option value="">-- Все --</option>
-                {statusOptions.map(s => (
-                  <option key={s} value={s}>{s}</option>
-                ))}
-              </select>
-            </div>
-
-            <div className="filter-item">
-              <label>Мин. сумма (₽):</label>
-              <input
-                type="number"
-                min="0"
-                value={filters.minAmount}
-                onChange={e => handleFilterChange("minAmount", e.target.value)}
-              />
-            </div>
-
-            <div className="filter-item">
-              <label>Макс. сумма (₽):</label>
-              <input
-                type="number"
-                min="0"
-                value={filters.maxAmount}
-                onChange={e => handleFilterChange("maxAmount", e.target.value)}
-              />
-            </div>
-
-            <div className="filter-item">
-              <label>Дата от:</label>
-              <input
-                type="date"
-                value={filters.dateFrom}
-                onChange={e => handleFilterChange("dateFrom", e.target.value)}
-              />
-            </div>
-
-            <div className="filter-item">
-              <label>Дата до:</label>
-              <input
-                type="date"
-                value={filters.dateTo}
-                onChange={e => handleFilterChange("dateTo", e.target.value)}
-              />
-            </div>
-
-            <div className="filter-item">
-              <label>Валюта:</label>
-              <input
-                type="text"
-                value={filters.currency}
-                onChange={e => handleFilterChange("currency", e.target.value.toUpperCase())}
-                placeholder="Например, RUB, USDT"
-              />
-            </div>
-
-            <div className="filter-item">
-              <label>Записей на странице:</label>
-              <select value={pagination.limit} onChange={handleLimitChange}>
-                {[5, 10, 20, 50].map(n => (
-                  <option key={n} value={n}>{n}</option>
-                ))}
-              </select>
-            </div>
+      <div className="filters-container">
+        <div className="filter-row">
+          <div className="filter-item">
+            <label>Трейдер:</label>
+            <select
+              value={filters.traderId}
+              onChange={e => handleFilterChange("traderId", e.target.value)}
+            >
+              <option value="">Все трейдеры</option>
+              {traders.map(t => (
+                <option key={t.id} value={t.id}>{t.username}</option>
+              ))}
+            </select>
           </div>
 
-          {loading ? (
-            <p>Загрузка...</p>
-          ) : orders.length === 0 ? (
-            <p>Сделок не найдено</p>
-          ) : (
-            <div className="table-container">
-              <table className="orders-table">
-                <thead>
-                  <tr>
-                    <th>ID сделки</th>
-                    <th>Реквизиты</th>
-                    <th>Сумма сделки</th>
-                    <th>Merchant</th>
-                    <th>Merchant order ID</th>
-                    <th>Создана</th>
-                    <th>Обновлена</th>
-                    <th onClick={() => handleSortChange("expires_at")} style={{ cursor: "pointer" }}>
-                      Таймер{renderSortArrow("expires_at")}
-                    </th>
-                    <th>Статус</th>
+          <div className="filter-item">
+            <label>Мерчант:</label>
+            <select
+              value={filters.merchantId}
+              onChange={e => handleFilterChange("merchantId", e.target.value)}
+            >
+              <option value="">Все мерчанты</option>
+              {merchants.map(m => (
+                <option key={m.id} value={m.id}>{m.username}</option>
+              ))}
+            </select>
+          </div>
+
+          <div className="filter-item">
+            <label>Статус:</label>
+            <select
+              value={filters.status}
+              onChange={e => handleFilterChange("status", e.target.value)}
+            >
+              <option value="">Все статусы</option>
+              {statusOptions.map(s => (
+                <option key={s} value={s}>{s}</option>
+              ))}
+            </select>
+          </div>
+
+          <div className="filter-item">
+            <label>Тип сделки:</label>
+            <select
+              value={filters.type}
+              onChange={e => handleFilterChange("type", e.target.value)}
+            >
+              <option value="">Все типы</option>
+              {typeOptions.map(t => (
+                <option key={t} value={t}>{t}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        <div className="filter-row">
+          <div className="filter-item">
+            <label>ID сделки:</label>
+            <input
+              type="text"
+              value={filters.orderId}
+              onChange={e => handleFilterChange("orderId", e.target.value)}
+              placeholder="Поиск по ID"
+            />
+          </div>
+
+          <div className="filter-item">
+            <label>ID заказа мерчанта:</label>
+            <input
+              type="text"
+              value={filters.merchantOrderId}
+              onChange={e => handleFilterChange("merchantOrderId", e.target.value)}
+              placeholder="Merchant Order ID"
+            />
+          </div>
+
+          <div className="filter-item">
+            <label>Банк:</label>
+            <select
+              value={filters.bankCode}
+              onChange={e => handleFilterChange("bankCode", e.target.value)}
+            >
+              <option value="">Все банки</option>
+              {banks.map(bank => (
+                <option key={bank.code} value={bank.code}>
+                  {bank.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="filter-item">
+            <label>ID устройства:</label>
+            <input
+              type="text"
+              value={filters.deviceId}
+              onChange={e => handleFilterChange("deviceId", e.target.value)}
+              placeholder="Device ID"
+            />
+          </div>
+        </div>
+
+        <div className="filter-row">
+          <div className="filter-item">
+            <label>Платежная система:</label>
+            <select
+              value={filters.paymentSystem}
+              onChange={e => handleFilterChange("paymentSystem", e.target.value)}
+            >
+              <option value="">Все системы</option>
+              {paymentSystemOptions.map(ps => (
+                <option key={ps} value={ps}>{ps}</option>
+              ))}
+            </select>
+          </div>
+
+          <div className="filter-item">
+            <label>Сумма от:</label>
+            <input
+              type="number"
+              min="0"
+              value={filters.amountMin}
+              onChange={e => handleFilterChange("amountMin", e.target.value)}
+              placeholder="Мин. сумма (₽)"
+            />
+          </div>
+
+          <div className="filter-item">
+            <label>Сумма до:</label>
+            <input
+              type="number"
+              min="0"
+              value={filters.amountMax}
+              onChange={e => handleFilterChange("amountMax", e.target.value)}
+              placeholder="Макс. сумма (₽)"
+            />
+          </div>
+
+          <div className="filter-item">
+            <label>Дата от:</label>
+            <input
+              type="date"
+              value={filters.timeOpeningStart}
+              onChange={e => handleFilterChange("timeOpeningStart", e.target.value)}
+            />
+          </div>
+
+          <div className="filter-item">
+            <label>Дата до:</label>
+            <input
+              type="date"
+              value={filters.timeOpeningEnd}
+              onChange={e => handleFilterChange("timeOpeningEnd", e.target.value)}
+            />
+          </div>
+        </div>
+
+        <div className="filter-actions">
+          <div className="filter-item">
+            <label>Записей на странице:</label>
+            <select value={pagination.itemsPerPage} onChange={handleLimitChange}>
+              {[10, 25, 50, 100].map(n => (
+                <option key={n} value={n}>{n}</option>
+              ))}
+            </select>
+          </div>
+          
+          <button className="compact-reset-btn" onClick={resetFilters} title="Сбросить все фильтры">
+            Сбросить
+          </button>
+        </div>
+      </div>
+
+      <div className="stats-summary">
+        <div className="stat-item">
+          <span className="stat-label">Всего сделок:</span>
+          <span className="stat-value">{pagination.totalItems}</span>
+        </div>
+        <div className="stat-item">
+          <span className="stat-label">Страница:</span>
+          <span className="stat-value">{pagination.page} из {pagination.totalPages}</span>
+        </div>
+      </div>
+
+      {loading ? (
+        <div className="loading-indicator">
+          <p>Загрузка сделок...</p>
+        </div>
+      ) : orders.length === 0 ? (
+        <div className="no-orders">
+          <p>Сделок не найдено</p>
+          <button className="compact-reset-btn" onClick={resetFilters}>
+            Сбросить фильтры
+          </button>
+        </div>
+      ) : (
+        <div className="table-container">
+          <table className="orders-table">
+            <thead>
+              <tr>
+                <th onClick={() => handleSortChange("order_id")} style={{ cursor: "pointer" }}>
+                  ID сделки{renderSortArrow("order_id")}
+                </th>
+                <th>Реквизиты</th>
+                <th onClick={() => handleSortChange("amount_fiat")} style={{ cursor: "pointer" }}>
+                  Сумма{renderSortArrow("amount_fiat")}
+                </th>
+                <th>Merchant</th>
+                <th>Merchant order ID</th>
+                <th onClick={() => handleSortChange("created_at")} style={{ cursor: "pointer" }}>
+                  Создана{renderSortArrow("created_at")}
+                </th>
+                <th onClick={() => handleSortChange("updated_at")} style={{ cursor: "pointer" }}>
+                  Обновлена{renderSortArrow("updated_at")}
+                </th>
+                <th onClick={() => handleSortChange("expires_at")} style={{ cursor: "pointer" }}>
+                  Таймер{renderSortArrow("expires_at")}
+                </th>
+                <th onClick={() => handleSortChange("status")} style={{ cursor: "pointer" }}>
+                  Статус{renderSortArrow("status")}
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {orders.map(order => {
+                const bank = order.bank_detail || {};
+                return (
+                  <tr key={order.order_id}>
+                    <td>
+                      <OrderIdCell orderId={order.order_id} />
+                    </td>
+                    <td>
+                      <BankDetailsCard bank={bank} />
+                    </td>
+                    <td>
+                      <AmountCard 
+                        amountFiat={order.amount_fiat} 
+                        amountCrypto={order.amount_crypto} 
+                        rate={order.crypto_rub_rate} 
+                      />
+                    </td>
+                    <td>{getUsername(order.merchant_id, merchants)}</td>
+                    <td>{order.merchant_order_id}</td>
+                    <td className="time-cell">
+                      {formatDateTime(order.created_at)}
+                    </td>
+                    <td className="time-cell">
+                      {formatDateTime(order.updated_at)}
+                    </td>
+                    <td>
+                      <Timer expiresAt={order.expires_at} />
+                    </td>
+                    <td>
+                      <div className={`status-cell ${order.status.toLowerCase()}`}>
+                        {order.status}
+                      </div>
+                    </td>
                   </tr>
-                </thead>
-                <tbody>
-                  {orders.map(o => {
-                    const bank = o.bank_detail || {};
-                    return (
-                      <tr key={o.order_id}>
-                        <td>
-                          <OrderIdCell orderId={o.order_id} />
-                        </td>
-                        <td>
-                          <BankDetailsCard bank={bank} />
-                        </td>
-                        <td>
-                          <AmountCard 
-                            amountFiat={o.amount_fiat} 
-                            amountCrypto={o.amount_crypto} 
-                            rate={o.crypto_rub_rate} 
-                          />
-                        </td>
-                        <td>{getUsername(o.merchant_id, merchants)}</td>
-                        <td>{o.merchant_order_id}</td>
-                        <td className="time-cell">
-                          {formatDateTime(o.created_at)}
-                        </td>
-                        <td className="time-cell">
-                          {formatDateTime(o.updated_at)}
-                        </td>
-                        <td>
-                          <Timer expiresAt={o.expires_at} />
-                        </td>
-                        <td>
-                          <div className="status-cell">
-                            {o.status}
-                            {o.status === "CANCELED" && (
-                              <button 
-                                className="dispute-btn" 
-                                onClick={() => openDisputeModal(o.order_id)}
-                              >
-                                Открыть диспут
-                              </button>
-                            )}
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-          )}
-
-          <div className="pagination">
-            <button disabled={pagination.page === 1} onClick={() => changePage(pagination.page - 1)}>
-              Назад
-            </button>
-            <span>
-              Стр. {pagination.page} / {pagination.totalPages}
-            </span>
-            <button disabled={pagination.page === pagination.totalPages} onClick={() => changePage(pagination.page + 1)}>
-              Вперёд
-            </button>
-          </div>
-        </>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
       )}
 
-      {disputeModalOpen && (
-        <div className="modal-overlay">
-          <div className="modal">
-            <h2>Открытие диспута для заказа: {disputeForm.order_id}</h2>
-            
-            <div className="modal-form-group">
-              <label>Причина диспута:</label>
-              <textarea
-                value={disputeForm.dispute_reason}
-                onChange={(e) => setDisputeForm(prev => ({ ...prev, dispute_reason: e.target.value }))}
-              />
-            </div>
-            
-            <div className="modal-form-group">
-              <label>Ссылка на доказательство (proof_url):</label>
-              <input
-                type="text"
-                value={disputeForm.proof_url}
-                onChange={(e) => setDisputeForm(prev => ({ ...prev, proof_url: e.target.value }))}
-              />
-            </div>
-            
-            <div className="modal-form-group">
-              <label>TTL (например, 24h, 2d):</label>
-              <input
-                type="text"
-                value={disputeForm.ttl}
-                onChange={(e) => setDisputeForm(prev => ({ ...prev, ttl: e.target.value }))}
-              />
-            </div>
-            
-            <div className="modal-form-group">
-              <label>Сумма диспута (₽):</label>
-              <input
-                type="number"
-                value={disputeForm.dispute_amount_fiat}
-                onChange={(e) => setDisputeForm(prev => ({ ...prev, dispute_amount_fiat: e.target.value }))}
-              />
-            </div>
-            
-            <div className="modal-buttons">
-              <button className="btn-primary" onClick={submitDispute}>Отправить</button>
-              <button className="btn-cancel" onClick={closeDisputeModal}>Отмена</button>
-            </div>
+      {pagination.totalPages > 1 && (
+        <div className="pagination-controls">
+          <button 
+            className="pagination-btn"
+            disabled={pagination.page === 1} 
+            onClick={() => changePage(pagination.page - 1)}
+          >
+            &lt; Назад
+          </button>
+          
+          <div className="page-info">
+            Страница {pagination.page} из {pagination.totalPages}
           </div>
+          
+          <button 
+            className="pagination-btn"
+            disabled={pagination.page === pagination.totalPages} 
+            onClick={() => changePage(pagination.page + 1)}
+          >
+            Вперёд &gt;
+          </button>
         </div>
       )}
     </div>
