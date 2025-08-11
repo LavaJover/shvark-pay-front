@@ -926,3 +926,245 @@
     min-width: 100%;
   }
 }
+
+/* Кнопка сброса фильтров — компактная */
+.filters .reset-btn {
+  padding: 4px 10px;
+  background-color: #e5e7eb;
+  color: #374151;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.filters .reset-btn:hover {
+  background-color: #d1d5db;
+}
+
+/* --- Исправление: компактная кнопка и порядок в блоке действий фильтров --- */
+/* Поставь этот блок в конец файла, чтобы перекрыть предыдущие правила */
+
+.filters-container .filter-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: flex-end; /* или space-between, если нужен разрыв */
+}
+
+/* Не даём .filter-item раздуваться в блоке действий */
+.filters-container .filter-actions .filter-item {
+  flex: 0 0 auto;      /* не растёт, не сжимается автоматически */
+  min-width: 140px;    /* можно подправить под желаемую ширину селекта */
+  max-width: 260px;
+}
+
+/* Контролируем ширину самого селекта в блоке действий */
+.filters-container .filter-actions .filter-item select,
+.filters-container .filter-actions .filter-item input {
+  width: 160px; /* фиксированная удобная ширина — подстраивай при необходимости */
+  box-sizing: border-box;
+}
+
+/* Компактная кнопка сброса: меньше, не будет расширяться */
+.filters-container .compact-reset-btn,
+.filters-container .compact-reset-btn.compact-reset-btn {
+  padding: 6px 10px;
+  font-size: 0.85rem;
+  white-space: nowrap;
+  border-radius: 6px;
+  height: 34px;
+  line-height: 1;
+  flex: 0 0 auto;     /* фиксированный размер, не займёт лишнее место */
+  min-width: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+/* Сохраняем цветовую схему твоей кнопки */
+.filters-container .compact-reset-btn {
+  background-color: #dc3545;
+  color: #fff;
+  border: none;
+}
+
+/* Hover эффект */
+.filters-container .compact-reset-btn:hover {
+  background-color: #c82333;
+}
+
+/* На небольших экранах — ставим блоки друг под другом */
+@media (max-width: 768px) {
+  .filters-container .filter-actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .filters-container .filter-actions .filter-item {
+    width: 100%;
+    max-width: none;
+  }
+
+  .filters-container .filter-actions .filter-item select,
+  .filters-container .filter-actions .filter-item input {
+    width: 100%;
+  }
+
+  .filters-container .compact-reset-btn {
+    align-self: flex-start;
+  }
+}
+
+/* --- FIX: блок действий фильтров — запретить растягивание и сделать кнопку компактной --- */
+/* Помести этот блок в самый конец файла, чтобы переопределить предыдущие правила */
+
+.filters-container .filter-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: flex-start; /* если хочешь, чтобы элементы выравнивались по правому краю, поставь space-between или flex-end */
+  flex-wrap: nowrap; /* не даём элементам переноситься в одну строку (будут переноситься в медиа-правилах) */
+}
+
+/* В блоке действий селекты/инпуты не должны безудержно раздуваться */
+.filters-container .filter-actions .filter-item {
+  flex: 0 0 auto;      /* не растёт, не сжимается автоматически */
+  min-width: 120px;    /* минимальная ширина селекта в блоке действий */
+  max-width: 220px;    /* не даём занять всё пространство */
+}
+
+/* Конкретно контролируем ширину поля "Записей на странице" (если нужно точнее) */
+.filters-container .filter-actions .filter-item select,
+.filters-container .filter-actions .filter-item input {
+  width: 140px;        /* подгони под свой дизайн */
+  box-sizing: border-box;
+}
+
+/* Компактная кнопка Сбросить — не растягивается, маленькая и аккуратная */
+.filters-container .compact-reset-btn {
+  flex: 0 0 auto;          /* фиксированный блок, не растёт */
+  padding: 6px 10px;
+  height: 34px;
+  min-width: 48px;         /* минимальная ширина */
+  max-width: 120px;        /* не станет чересчур широкой */
+  white-space: nowrap;
+  font-size: 0.88rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  box-sizing: border-box;
+}
+
+/* Если хочешь совсем маленькую кнопку-иконку */
+.filters-container .compact-reset-btn.icon {
+  padding: 6px;
+  min-width: 34px;
+  max-width: 34px;
+  width: 34px;
+}
+
+/* hover */
+.filters-container .compact-reset-btn:hover {
+  filter: brightness(0.95);
+}
+
+/* На маленьких экранах даём перенос */
+@media (max-width: 768px) {
+  .filters-container .filter-actions {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+
+  .filters-container .filter-actions .filter-item {
+    width: 100%;
+    max-width: none;
+    min-width: 0;
+  }
+
+  .filters-container .compact-reset-btn {
+    align-self: flex-start;
+  }
+}
+/* Стили для пагинации */
+.pagination-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+  padding: 15px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.pagination-btn {
+  padding: 8px 16px;
+  margin: 0 10px;
+  background-color: #4a76a8;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s;
+}
+
+.pagination-btn:hover:not(:disabled) {
+  background-color: #3a5f8d;
+}
+
+.pagination-btn:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.page-info {
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+  margin: 0 15px;
+}
+
+/* Стили для ячейки трейдера */
+.trader-cell {
+  display: flex;
+  flex-direction: column;
+  padding: 5px;
+}
+
+.trader-name {
+  font-weight: 500;
+  margin-bottom: 3px;
+}
+
+.trader-id {
+  display: flex;
+  align-items: center;
+  font-size: 12px;
+  color: #666;
+  cursor: pointer;
+  padding: 3px 5px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.trader-id:hover {
+  background-color: #f0f0f0;
+}
+
+.trader-id .copy-icon {
+  margin-left: 5px;
+  font-size: 10px;
+  opacity: 0.7;
+}
+
+.trader-id:hover .copy-icon {
+  opacity: 1;
+}

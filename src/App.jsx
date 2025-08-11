@@ -24,6 +24,7 @@ import TelegramLogin from './pages/AdminTelegramPage';
 import SettleSettings from './pages/AdminSettleSettings';
 import AdminTeamLeadsPage from './pages/AdminTeamLeadsPage';
 import TeamLeadCabinetPage from './pages/TeamLeadCabinetPage'; // Добавляем страницу кабинета тимлида
+import AdminTradersStats from './pages/AdminTradersStats';
 
 function App() {
   return (
@@ -60,6 +61,7 @@ function App() {
               <Route path="telegram" element={<TelegramLogin/>} />
               <Route path="settle-settings" element={<SettleSettings/>} />
               <Route path="teamleads" element={<AdminTeamLeadsPage/>}/>
+              <Route path="traders-stats" element={<AdminTradersStats/>}/>
             </Route>
           </Route>
           <Route path="/login" element={<LoginPage/>}/>

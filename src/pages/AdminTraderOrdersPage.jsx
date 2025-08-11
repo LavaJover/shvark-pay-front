@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import api from "../api/axios";
 import { toast } from "react-toastify";
 import "./AdminTraderOrdersPage.css";
@@ -51,6 +52,8 @@ const Timer = ({ expiresAt }) => {
 };
 
 const AdminTraderOrdersPage = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
   const [traders, setTraders] = useState([]);
   const [merchants, setMerchants] = useState([]);
   const [banks, setBanks] = useState([]);
@@ -62,7 +65,7 @@ const AdminTraderOrdersPage = () => {
     itemsPerPage: 10 
   });
   const [loading, setLoading] = useState(false);
-  const [autoRefresh, setAutoRefresh] = useState(true);
+  const [autoRefresh, setAutoRefresh] = useState(false);
   const [lastUpdated, setLastUpdated] = useState(null);
   
   const [filters, setFilters] = useState({
@@ -83,6 +86,38 @@ const AdminTraderOrdersPage = () => {
   });
 
   const refreshIntervalRef = useRef(null);
+  const fetchOrdersRef = useRef();
+
+  const updateUrlParams = () => {
+    const params = new URLSearchParams();
+    params.set('page', pagination.page);
+    params.set('limit', pagination.itemsPerPage);
+    navigate(`?${params.toString()}`, { replace: true });
+  };
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const page = params.get('page');
+    const limit = params.get('limit');
+    
+    if (page) {
+      setPagination(prev => ({
+        ...prev,
+        page: parseInt(page, 10)
+      }));
+    }
+    
+    if (limit) {
+      setPagination(prev => ({
+        ...prev,
+        itemsPerPage: parseInt(limit, 10)
+      }));
+    }
+  }, []);
+
+  useEffect(() => {
+    updateUrlParams();
+  }, [pagination.page, pagination.itemsPerPage]);
 
   const fetchUsers = async () => {
     try {
@@ -113,11 +148,6 @@ const AdminTraderOrdersPage = () => {
       toast.error("Ошибка при загрузке списка банков");
       console.error(e);
     }
-  };
-
-  const getUsername = (id, list) => {
-    const user = list.find(u => u.id === id);
-    return user ? user.username : id;
   };
 
   const fetchOrders = async () => {
@@ -157,15 +187,28 @@ const AdminTraderOrdersPage = () => {
 
       setLastUpdated(new Date());
     } catch (e) {
-      toast.error("Ошибка при загрузке сделок");
-      console.error(e);
+      console.error("Ошибка при загрузке сделок:", e);
     } finally {
       setLoading(false);
     }
   };
 
+  useEffect(() => {
+    fetchOrdersRef.current = fetchOrders;
+  }, [filters, pagination.page, pagination.itemsPerPage]);
+
+  useEffect(() => {
+    fetchUsers();
+    fetchBanks();
+    fetchOrdersRef.current();
+  }, []);
+
+  useEffect(() => {
+    fetchOrdersRef.current();
+  }, [filters, pagination.page, pagination.itemsPerPage]);
+
   const handleManualRefresh = () => {
-    fetchOrders();
+    fetchOrdersRef.current();
     toast.info("Список сделок обновлён");
   };
 
@@ -176,7 +219,9 @@ const AdminTraderOrdersPage = () => {
     
     if (autoRefresh) {
       refreshIntervalRef.current = setInterval(() => {
-        fetchOrders();
+        if (fetchOrdersRef.current) {
+          fetchOrdersRef.current();
+        }
       }, 10000);
     }
     
@@ -187,25 +232,16 @@ const AdminTraderOrdersPage = () => {
     };
   }, [autoRefresh]);
 
-  useEffect(() => {
-    fetchUsers();
-    fetchBanks();
-    fetchOrders();
-  }, []);
-
-  useEffect(() => {
-    fetchOrders();
-  }, [filters, pagination.page, pagination.itemsPerPage]);
-
   const handleFilterChange = (field, value) => {
     setFilters(prev => ({ ...prev, [field]: value }));
     setPagination(prev => ({ ...prev, page: 1 }));
   };
 
   const handleLimitChange = (e) => {
+    const newLimit = Number(e.target.value);
     setPagination(prev => ({ 
       ...prev, 
-      itemsPerPage: Number(e.target.value), 
+      itemsPerPage: newLimit, 
       page: 1 
     }));
   };
@@ -286,6 +322,29 @@ const AdminTraderOrdersPage = () => {
       >
         {shortId}
         <span className="copy-icon">⎘</span>
+      </div>
+    );
+  };
+
+  const UserCell = ({ userId, userList, fallback = "Неизвестный пользователь" }) => {
+    const user = userList.find(u => u.id === userId);
+    const shortId = userId?.length > 8 ? `${userId.substring(0, 4)}...${userId.slice(-4)}` : userId || "";
+    
+    if (!userId) {
+      return <div className="user-cell">Не назначен</div>;
+    }
+    
+    return (
+      <div className="user-cell">
+        <div className="user-name">{user ? user.username : fallback}</div>
+        <div 
+          className="user-id"
+          onClick={() => copyToClipboard(userId)}
+          title="Нажмите, чтобы скопировать ID"
+        >
+          {shortId}
+          <span className="copy-icon">⎘</span>
+        </div>
       </div>
     );
   };
@@ -605,91 +664,145 @@ const AdminTraderOrdersPage = () => {
           </button>
         </div>
       ) : (
-        <div className="table-container">
-          <table className="orders-table">
-            <thead>
-              <tr>
-                <th onClick={() => handleSortChange("order_id")} style={{ cursor: "pointer" }}>
-                  ID сделки{renderSortArrow("order_id")}
-                </th>
-                <th>Реквизиты</th>
-                <th onClick={() => handleSortChange("amount_fiat")} style={{ cursor: "pointer" }}>
-                  Сумма{renderSortArrow("amount_fiat")}
-                </th>
-                <th>Merchant</th>
-                <th>Merchant order ID</th>
-                <th onClick={() => handleSortChange("created_at")} style={{ cursor: "pointer" }}>
-                  Создана{renderSortArrow("created_at")}
-                </th>
-                <th onClick={() => handleSortChange("updated_at")} style={{ cursor: "pointer" }}>
-                  Обновлена{renderSortArrow("updated_at")}
-                </th>
-                <th onClick={() => handleSortChange("expires_at")} style={{ cursor: "pointer" }}>
-                  Таймер{renderSortArrow("expires_at")}
-                </th>
-                <th onClick={() => handleSortChange("status")} style={{ cursor: "pointer" }}>
-                  Статус{renderSortArrow("status")}
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {orders.map(order => {
-                const bank = order.bank_detail || {};
-                return (
-                  <tr key={order.order_id}>
-                    <td>
-                      <OrderIdCell orderId={order.order_id} />
-                    </td>
-                    <td>
-                      <BankDetailsCard bank={bank} />
-                    </td>
-                    <td>
-                      <AmountCard 
-                        amountFiat={order.amount_fiat} 
-                        amountCrypto={order.amount_crypto} 
-                        rate={order.crypto_rub_rate} 
-                      />
-                    </td>
-                    <td>{getUsername(order.merchant_id, merchants)}</td>
-                    <td>{order.merchant_order_id}</td>
-                    <td className="time-cell">
-                      {formatDateTime(order.created_at)}
-                    </td>
-                    <td className="time-cell">
-                      {formatDateTime(order.updated_at)}
-                    </td>
-                    <td>
-                      <Timer expiresAt={order.expires_at} />
-                    </td>
-                    <td>
-                      <div className={`status-cell ${order.status.toLowerCase()}`}>
-                        {order.status}
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+        <div className="table-scroll-container">
+          <div className="table-container">
+            <table className="orders-table">
+              <thead>
+                <tr>
+                  <th onClick={() => handleSortChange("order_id")} style={{ cursor: "pointer" }}>
+                    ID сделки{renderSortArrow("order_id")}
+                  </th>
+                  <th>Реквизиты</th>
+                  <th onClick={() => handleSortChange("amount_fiat")} style={{ cursor: "pointer" }}>
+                    Сумма{renderSortArrow("amount_fiat")}
+                  </th>
+                  <th>Merchant</th>
+                  <th>Merchant order ID</th>
+                  <th onClick={() => handleSortChange("trader_id")} style={{ cursor: "pointer" }}>
+                    Trader{renderSortArrow("trader_id")}
+                  </th>
+                  <th onClick={() => handleSortChange("created_at")} style={{ cursor: "pointer" }}>
+                    Создана{renderSortArrow("created_at")}
+                  </th>
+                  <th onClick={() => handleSortChange("updated_at")} style={{ cursor: "pointer" }}>
+                    Обновлена{renderSortArrow("updated_at")}
+                  </th>
+                  <th onClick={() => handleSortChange("expires_at")} style={{ cursor: "pointer" }}>
+                    Таймер{renderSortArrow("expires_at")}
+                  </th>
+                  <th onClick={() => handleSortChange("status")} style={{ cursor: "pointer" }}>
+                    Статус{renderSortArrow("status")}
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {orders.map(order => {
+                  const bank = order.bank_detail || {};
+                  const traderId = bank?.trader_id || "";
+                  
+                  return (
+                    <tr key={order.order_id}>
+                      <td>
+                        <OrderIdCell orderId={order.order_id} />
+                      </td>
+                      <td>
+                        <BankDetailsCard bank={bank} />
+                      </td>
+                      <td>
+                        <AmountCard 
+                          amountFiat={order.amount_fiat} 
+                          amountCrypto={order.amount_crypto} 
+                          rate={order.crypto_rub_rate} 
+                        />
+                      </td>
+                      <td>
+                        <UserCell 
+                          userId={order.merchant_id} 
+                          userList={merchants} 
+                          fallback="Неизвестный мерчант" 
+                        />
+                      </td>
+                      <td>{order.merchant_order_id}</td>
+                      <td>
+                        <UserCell 
+                          userId={traderId} 
+                          userList={traders} 
+                          fallback="Неизвестный трейдер" 
+                        />
+                      </td>
+                      <td className="time-cell">
+                        {formatDateTime(order.created_at)}
+                      </td>
+                      <td className="time-cell">
+                        {formatDateTime(order.updated_at)}
+                      </td>
+                      <td>
+                        <Timer expiresAt={order.expires_at} />
+                      </td>
+                      <td>
+                        <div className={`status-cell ${order.status.toLowerCase()}`}>
+                          {order.status}
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
 
-      {pagination.totalPages > 1 && (
-        <div className="pagination-controls">
+      {pagination.totalPages > 0 && (
+        <div className="pagination-controls" style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          margin: '20px 0',
+          padding: '10px',
+          backgroundColor: '#f5f5f5',
+          borderRadius: '8px',
+          boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+          zIndex: 100,
+          position: 'relative'
+        }}>
           <button 
-            className="pagination-btn"
+            style={{
+              padding: '8px 16px',
+              margin: '0 10px',
+              backgroundColor: pagination.page > 1 ? '#4a76a8' : '#cccccc',
+              color: 'white',
+              border: 'none',
+              borderRadius: '4px',
+              cursor: pagination.page > 1 ? 'pointer' : 'not-allowed',
+              fontSize: '14px'
+            }}
             disabled={pagination.page === 1} 
             onClick={() => changePage(pagination.page - 1)}
           >
             &lt; Назад
           </button>
           
-          <div className="page-info">
+          <div style={{
+            fontSize: '14px',
+            fontWeight: 500,
+            color: '#333',
+            margin: '0 15px'
+          }}>
             Страница {pagination.page} из {pagination.totalPages}
           </div>
           
           <button 
-            className="pagination-btn"
+            style={{
+              padding: '8px 16px',
+              margin: '0 10px',
+              backgroundColor: pagination.page < pagination.totalPages ? '#4a76a8' : '#cccccc',
+              color: 'white',
+              border: 'none',
+              borderRadius: '4px',
+              cursor: pagination.page < pagination.totalPages ? 'pointer' : 'not-allowed',
+              fontSize: '14px'
+            }}
             disabled={pagination.page === pagination.totalPages} 
             onClick={() => changePage(pagination.page + 1)}
           >
