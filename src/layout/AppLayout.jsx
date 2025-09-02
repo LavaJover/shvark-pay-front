@@ -32,6 +32,7 @@ const AppLayout = () => {
                     <Link to="/" className='nav-link' onClick={() => setMobileMenuOpen(false)}>Главная</Link>
                     <Link to="/orders" className='nav-link' onClick={() => setMobileMenuOpen(false)}>Сделки</Link>
                     <Link to="/bank-details" className='nav-link' onClick={() => setMobileMenuOpen(false)}>Реквизиты</Link>
+                    <Link to="/devices" className='nav-link' onClick={() => setMobileMenuOpen(false)}>Устройства</Link>
                     <Link to="/history" className='nav-link' onClick={() => setMobileMenuOpen(false)}>История операций</Link>
                     <Link to="/stats" className='nav-link' onClick={() => setMobileMenuOpen(false)}>Статистика</Link>
                     <Link to="/settings" className='nav-link' onClick={() => setMobileMenuOpen(false)}>Настройки</Link>

@@ -25,6 +25,7 @@ import SettleSettings from './pages/AdminSettleSettings';
 import AdminTeamLeadsPage from './pages/AdminTeamLeadsPage';
 import TeamLeadCabinetPage from './pages/TeamLeadCabinetPage'; // Добавляем страницу кабинета тимлида
 import AdminTradersStats from './pages/AdminTradersStats';
+import DevicesPage from './pages/DevicesPage';
 
 function App() {
   return (
@@ -37,6 +38,7 @@ function App() {
             <Route path="settings" element={<SettingsPage/>}/>
             <Route path="orders" element={<OrdersPage/>}/>
             <Route path="bank-details" element={<BankDetailsPage/>}/>
+            <Route path="devices" element={<DevicesPage/>}/>
             <Route path="stats" element={<StatPage/>}/>
             
             {/* Кабинет тимлида */}
