@@ -133,7 +133,8 @@ const AdminWalletsPage = () => {
         endpoint,
         {
           amount: parseFloat(depositAmount),
-          traderId: selectedUser === "platform" ? null : selectedUser,
+          // Для платформы передаем "platform" вместо null
+          traderId: selectedUser === "platform" ? "platform" : selectedUser,
           txHash: "admin-deposit",
         },
         {
@@ -152,16 +153,13 @@ const AdminWalletsPage = () => {
   const handleWithdraw = async () => {
     setShowWithdrawModal(false)
     try {
-      // Для платформы используем специальный endpoint
-      const endpoint = selectedUser === "platform"
-        ? "/wallets/platform/withdraw"
-        : "/wallets/offchain-withdraw"
-      
+      // Для всех кошельков используем один и тот же endpoint offchain-withdraw
       await api.post(
-        endpoint,
+        "/wallets/offchain-withdraw",
         {
           amount: parseFloat(withdrawAmount),
-          traderId: selectedUser === "platform" ? null : selectedUser,
+          // Для платформы передаем "platform"
+          traderId: selectedUser === "platform" ? "platform" : selectedUser,
           txHash: "admin-withdraw",
         },
         {
