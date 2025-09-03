@@ -18,7 +18,13 @@ const actionLabels = {
 
 const AdminDisputesPage = () => {
   const [disputes, setDisputes] = useState([]);
-  const [statusFilter, setStatusFilter] = useState("DISPUTE_OPENED");
+  const [filters, setFilters] = useState({
+    status: "DISPUTE_OPENED",
+    traderId: "",
+    merchantId: "",
+    disputeId: "",
+    orderId: "",
+  });
   const [pagination, setPagination] = useState({
     page: 1,
     totalPages: 1,
@@ -55,19 +61,38 @@ const AdminDisputesPage = () => {
   const fetchDisputesAndUsers = async () => {
     setLoading(true);
     try {
-      const [disputesRes, tradersRes, merchantsRes] = await Promise.all([
-        api.get(
-          `/admin/orders/disputes?page=${pagination.page}&limit=${pagination.limit}&status=${statusFilter}`
-        ),
-        api.get("/admin/traders"),
-        api.get("/admin/merchants"),
+      // Формируем параметры запроса
+      const params = {
+        page: pagination.page,
+        limit: pagination.limit,
+        status: filters.status,
+      };
+      
+      // Добавляем фильтры только если они не пустые
+      if (filters.traderId) params.traderId = filters.traderId;
+      if (filters.merchantId) params.merchantId = filters.merchantId;
+      if (filters.disputeId) params.disputeId = filters.disputeId;
+      if (filters.orderId) params.orderId = filters.orderId;
+
+      const [disputesRes, tradersRes, teamLeadsRes, merchantsRes] = await Promise.all([
+        api.get(`/admin/orders/disputes?${new URLSearchParams(params)}`),
+        api.get("/admin/users?role=TRADER"),
+        api.get("/admin/users?role=TEAM_LEAD"),
+        api.get("/admin/users?role=MERCHANT"),
       ]);
+      
+      // Объединяем трейдеров и тимлидов в один список
+      const combinedTraders = [
+        ...(tradersRes.data.users || []),
+        ...(teamLeadsRes.data.users || [])
+      ];
+      
       setDisputes(disputesRes.data.disputes || []);
       setPagination((prev) => ({
         ...prev,
         totalPages: disputesRes.data.pagination?.total_pages || 1,
       }));
-      setTraders(tradersRes.data.users || []);
+      setTraders(combinedTraders);
       setMerchants(merchantsRes.data.users || []);
       updateTimers(disputesRes.data.disputes || []);
     } catch (err) {
@@ -112,7 +137,7 @@ const AdminDisputesPage = () => {
 
   useEffect(() => {
     fetchDisputesAndUsers();
-  }, [pagination.page, pagination.limit, statusFilter]);
+  }, [pagination.page, pagination.limit, filters]);
 
   const handleAction = async (action, disputeId) => {
     try {
@@ -130,6 +155,22 @@ const AdminDisputesPage = () => {
   const handleLimitChange = (e) => {
     const newLimit = parseInt(e.target.value, 10);
     setPagination({ page: 1, totalPages: pagination.totalPages, limit: newLimit });
+  };
+
+  const handleFilterChange = (field, value) => {
+    setFilters(prev => ({ ...prev, [field]: value }));
+    setPagination(prev => ({ ...prev, page: 1 }));
+  };
+
+  const resetFilters = () => {
+    setFilters({
+      status: "DISPUTE_OPENED",
+      traderId: "",
+      merchantId: "",
+      disputeId: "",
+      orderId: "",
+    });
+    setPagination(prev => ({ ...prev, page: 1 }));
   };
 
   const formatMsToTime = (ms) => {
@@ -210,148 +251,87 @@ const AdminDisputesPage = () => {
     <div className="admin-disputes-page">
       <h1>Диспуты</h1>
 
-      {/* Панель поиска */}
-      <div className="search-panel">
-        <div className="search-group">
-          <input
-            type="text"
-            placeholder="ID сделки в системе"
-            value={searchOrderId}
-            onChange={(e) => setSearchOrderId(e.target.value)}
-          />
-          <button onClick={() => handleSearch("order", searchOrderId)}>
-            Найти сделку
-          </button>
-        </div>
-
-        <div className="search-group">
-          <input
-            type="text"
-            placeholder="ID сделки мерчанта"
-            value={searchMerchantOrderId}
-            onChange={(e) => setSearchMerchantOrderId(e.target.value)}
-          />
-          <button onClick={() => handleSearch("merchant", searchMerchantOrderId)}>
-            Найти сделку мерчанта
-          </button>
-        </div>
-      </div>
-
       {/* Фильтры и пагинация */}
       <div className="filter-row">
-        <label>Фильтр по статусу: </label>
-        <select
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
-        >
-          {Object.entries(statusLabels).map(([key, label]) => (
-            <option key={key} value={key}>
-              {label}
-            </option>
-          ))}
-        </select>
-
-        <label style={{ marginLeft: "20px" }}>Записей на странице: </label>
-        <select value={pagination.limit} onChange={handleLimitChange}>
-          {[5, 10, 20, 50].map((num) => (
-            <option key={num} value={num}>
-              {num}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      {/* Найденная сделка */}
-      {foundOrder && (
-        <div className="found-order">
-          <h2>Найденная сделка</h2>
-          <div className="order-card">
-            <div className="order-section">
-              <h3>Банковские реквизиты</h3>
-              <p>
-                <strong>Банк:</strong> {foundOrder.bank_detail.bank_name || "-"}
-              </p>
-              <p>
-                <strong>Платежная система:</strong>{" "}
-                {foundOrder.bank_detail.payment_system || "-"}
-              </p>
-              {foundOrder.bank_detail.phone ? (
-                <p>
-                  <strong>Телефон:</strong> {foundOrder.bank_detail.phone}
-                </p>
-              ) : foundOrder.bank_detail.card_number ? (
-                <p>
-                  <strong>Номер карты:</strong>{" "}
-                  {foundOrder.bank_detail.card_number}
-                </p>
-              ) : null}
-              <p>
-                <strong>Владелец:</strong> {foundOrder.bank_detail.owner || "-"}
-              </p>
-              <p>
-                <strong>Трейдер:</strong>{" "}
-                {findUsername(foundOrder.bank_detail.trader_id, traders)}
-              </p>
-            </div>
-
-            <div className="order-section">
-              <h3>Детали сделки</h3>
-              <p>
-                <strong>ID:</strong> {foundOrder.order_id}
-              </p>
-              <p>
-                <strong>ID мерчанта:</strong> {foundOrder.merchant_order_id}
-              </p>
-              <p>
-                <strong>Мерчант:</strong>{" "}
-                {findUsername(foundOrder.merchant_id, merchants)}
-              </p>
-              <p>
-                <strong>Статус:</strong> {foundOrder.status}
-              </p>
-              <p>
-                <strong>Сумма (₽):</strong> {foundOrder.amount_fiat}
-              </p>
-              <p>
-                <strong>Сумма (крипто):</strong> {foundOrder.amount_crypto}
-              </p>
-              <p>
-                <strong>Курс:</strong> {foundOrder.crypto_rub_rate}
-              </p>
-              <p>
-                <strong>Награда трейдера:</strong> {foundOrder.trader_reward}
-              </p>
-              <p>
-                <strong>Создана:</strong>{" "}
-                {new Date(foundOrder.created_at).toLocaleString()}
-              </p>
-              <p>
-                <strong>Обновлена:</strong>{" "}
-                {new Date(foundOrder.updated_at).toLocaleString()}
-              </p>
-              <p>
-                <strong>Истекает:</strong>{" "}
-                {new Date(foundOrder.expires_at).toLocaleString()}
-              </p>
-            </div>
-
-            {foundOrder.status === "CANCELED" && (
-              <button
-                className="open-dispute-btn"
-                onClick={() => {
-                  setDisputeForm((prev) => ({
-                    ...prev,
-                    dispute_amount_fiat: foundOrder.amount_fiat,
-                  }));
-                  setShowCreateDisputeModal(true);
-                }}
-              >
-                Открыть диспут
-              </button>
-            )}
-          </div>
+        <div className="filter-group">
+          <label>Статус: </label>
+          <select
+            value={filters.status}
+            onChange={(e) => handleFilterChange("status", e.target.value)}
+          >
+            {Object.entries(statusLabels).map(([key, label]) => (
+              <option key={key} value={key}>
+                {label}
+              </option>
+            ))}
+          </select>
         </div>
-      )}
+
+        <div className="filter-group">
+          <label>Трейдер: </label>
+          <select
+            value={filters.traderId}
+            onChange={(e) => handleFilterChange("traderId", e.target.value)}
+          >
+            <option value="">Все трейдеры</option>
+            {traders.map(trader => (
+              <option key={trader.id} value={trader.id}>
+                {trader.username}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="filter-group">
+          <label>Мерчант: </label>
+          <select
+            value={filters.merchantId}
+            onChange={(e) => handleFilterChange("merchantId", e.target.value)}
+          >
+            <option value="">Все мерчанты</option>
+            {merchants.map(merchant => (
+              <option key={merchant.id} value={merchant.id}>
+                {merchant.username}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="filter-group">
+          <label>ID диспута: </label>
+          <input
+            type="text"
+            value={filters.disputeId}
+            onChange={(e) => handleFilterChange("disputeId", e.target.value)}
+            placeholder="Фильтр по ID диспута"
+          />
+        </div>
+
+        <div className="filter-group">
+          <label>ID сделки: </label>
+          <input
+            type="text"
+            value={filters.orderId}
+            onChange={(e) => handleFilterChange("orderId", e.target.value)}
+            placeholder="Фильтр по ID сделки"
+          />
+        </div>
+
+        <div className="filter-group">
+          <label>Записей: </label>
+          <select value={pagination.limit} onChange={handleLimitChange}>
+            {[5, 10, 20, 50].map((num) => (
+              <option key={num} value={num}>
+                {num}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <button className="reset-filters-btn" onClick={resetFilters}>
+          Сбросить фильтры
+        </button>
+      </div>
 
       {/* Список диспутов */}
       {loading ? (

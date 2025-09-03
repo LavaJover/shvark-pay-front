@@ -1,0 +1,219 @@
+/* bankRequisites.css */
+.bank-requisites-page {
+    padding: 20px;
+    font-family: Arial, sans-serif;
+  }
+  
+  .bank-requisites-page h1 {
+    margin-bottom: 20px;
+    color: #333;
+  }
+  
+  .filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 20px;
+    padding: 15px;
+    background-color: #f5f5f5;
+    border-radius: 5px;
+  }
+  
+  .filter-group {
+    display: flex;
+    flex-direction: column;
+    min-width: 150px;
+  }
+  
+  .filter-group label {
+    margin-bottom: 5px;
+    font-weight: bold;
+    font-size: 14px;
+  }
+  
+  .filter-group select {
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+  }
+  
+  .loading {
+    text-align: center;
+    padding: 40px;
+    font-size: 18px;
+  }
+  
+  .table-container {
+    overflow-x: auto;
+    margin-bottom: 20px;
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 800px;
+  }
+  
+  th, td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  th {
+    background-color: #f8f8f8;
+    font-weight: bold;
+  }
+  
+  .copyable {
+    cursor: pointer;
+    color: #0066cc;
+    text-decoration: underline;
+  }
+  
+  .copyable:hover {
+    color: #004499;
+  }
+  
+  .trader-info .trader-name {
+    font-weight: bold;
+  }
+  
+  .trader-info .trader-id {
+    font-size: 12px;
+    color: #666;
+  }
+  
+  .bank-info div {
+    margin-bottom: 5px;
+  }
+  
+  .bank-name {
+    font-weight: bold;
+  }
+  
+  .bank-code {
+    font-size: 14px;
+    color: #666;
+  }
+  
+  .owner {
+    font-style: italic;
+  }
+  
+  .payment-details {
+    font-size: 14px;
+    background-color: #f0f0f0;
+    padding: 3px 5px;
+    border-radius: 3px;
+    display: inline-block;
+  }
+  
+  .limits div {
+    margin-bottom: 3px;
+    font-size: 14px;
+  }
+  
+  .status {
+    padding: 5px 10px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: bold;
+  }
+  
+  .status.enabled {
+    background-color: #e6f7e6;
+    color: #2e7d32;
+  }
+  
+  .status.disabled {
+    background-color: #ffe6e6;
+    color: #d32f2f;
+  }
+  
+  .pagination {
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+    margin-top: 20px;
+  }
+  
+  .pagination button {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    background-color: white;
+    cursor: pointer;
+    border-radius: 4px;
+  }
+  
+  .pagination button:hover:not(:disabled) {
+    background-color: #f0f0f0;
+  }
+  
+  .pagination button.active {
+    background-color: #0066cc;
+    color: white;
+    border-color: #0066cc;
+  }
+  
+  .pagination button:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+  
+  /* Адаптивность для мобильных устройств */
+  @media (max-width: 768px) {
+    .bank-requisites-page {
+      padding: 10px;
+    }
+    
+    .filters {
+      flex-direction: column;
+      gap: 10px;
+    }
+    
+    .filter-group {
+      width: 100%;
+    }
+    
+    th, td {
+      padding: 8px 10px;
+      font-size: 14px;
+    }
+    
+    .limits div {
+      font-size: 12px;
+    }
+    
+    .pagination {
+      flex-wrap: wrap;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .bank-requisites-page h1 {
+      font-size: 20px;
+    }
+    
+    th, td {
+      padding: 6px 8px;
+      font-size: 12px;
+    }
+    
+    .trader-info .trader-id {
+      font-size: 10px;
+    }
+    
+    .payment-details {
+      font-size: 12px;
+    }
+    
+    .limits div {
+      font-size: 11px;
+    }
+    
+    .status {
+      font-size: 12px;
+      padding: 3px 6px;
+    }
+  }

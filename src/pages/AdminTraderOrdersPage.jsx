@@ -12,14 +12,19 @@ const statusOptions = [
 ];
 
 const typeOptions = [
-  "BUY",
-  "SELL"
+  "DEPOSIT",
 ];
 
 const paymentSystemOptions = [
   "SBP",
-  "CARD",
   "C2C"
+];
+
+const disputeReasonOptions = [
+  { value: "UNKNOWN", label: "Неизвестно" },
+  { value: "NO_PAYMENT", label: "Нет оплаты" },
+  { value: "WRONG_AMOUNT", label: "Неверная сумма" },
+  { value: "WRONG_REQUISITE", label: "Неверные реквизиты" }
 ];
 
 const Timer = ({ expiresAt }) => {
@@ -83,6 +88,15 @@ const AdminTraderOrdersPage = () => {
     paymentSystem: "",
     deviceId: "",
     sort: "created_at desc"
+  });
+
+  const [showDisputeModal, setShowDisputeModal] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [disputeForm, setDisputeForm] = useState({
+    dispute_amount_fiat: 0,
+    dispute_reason: "NO_PAYMENT",
+    proof_url: "",
+    ttl: "30",
   });
 
   const refreshIntervalRef = useRef(null);
@@ -433,6 +447,48 @@ const AdminTraderOrdersPage = () => {
     });
   };
 
+  const openDisputeModal = (order) => {
+    setSelectedOrder(order);
+    setDisputeForm({
+      dispute_amount_fiat: order.amount_fiat || 0,
+      dispute_reason: "NO_PAYMENT",
+      proof_url: "",
+      ttl: "30",
+    });
+    setShowDisputeModal(true);
+  };
+
+  const closeDisputeModal = () => {
+    setShowDisputeModal(false);
+    setSelectedOrder(null);
+  };
+
+  const handleDisputeFormChange = (field, value) => {
+    setDisputeForm(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleCreateDispute = async () => {
+    if (!disputeForm.ttl || disputeForm.ttl <= 0) {
+      toast.error("Укажите валидное время жизни диспута");
+      return;
+    }
+
+    try {
+      await api.post("/admin/disputes/create", {
+        ...disputeForm,
+        order_id: selectedOrder.order_id,
+        ttl: `${disputeForm.ttl}m`,
+      });
+
+      toast.success("Диспут успешно открыт");
+      closeDisputeModal();
+      fetchOrdersRef.current();
+    } catch (err) {
+      toast.error("Ошибка при открытии диспута");
+      console.error(err);
+    }
+  };
+
   return (
     <div className="admin-trader-orders-page">
       <div className="header-row">
@@ -693,6 +749,7 @@ const AdminTraderOrdersPage = () => {
                   <th onClick={() => handleSortChange("status")} style={{ cursor: "pointer" }}>
                     Статус{renderSortArrow("status")}
                   </th>
+                  <th>Действия</th>
                 </tr>
               </thead>
               <tbody>
@@ -743,6 +800,16 @@ const AdminTraderOrdersPage = () => {
                         <div className={`status-cell ${order.status.toLowerCase()}`}>
                           {order.status}
                         </div>
+                      </td>
+                      <td>
+                        {(order.status === "CANCELED" || order.status === "COMPLETED") && (
+                          <button 
+                            className="open-dispute-btn"
+                            onClick={() => openDisputeModal(order)}
+                          >
+                            Открыть диспут
+                          </button>
+                        )}
                       </td>
                     </tr>
                   );
@@ -808,6 +875,66 @@ const AdminTraderOrdersPage = () => {
           >
             Вперёд &gt;
           </button>
+        </div>
+      )}
+
+      {showDisputeModal && selectedOrder && (
+        <div className="modal">
+          <div className="modal-content">
+            <h2>Открытие диспута для сделки {selectedOrder.order_id}</h2>
+            
+            <div className="form-group">
+              <label>Сумма диспута (₽):</label>
+              <input
+                type="number"
+                value={disputeForm.dispute_amount_fiat}
+                onChange={(e) => handleDisputeFormChange("dispute_amount_fiat", parseFloat(e.target.value) || 0)}
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Причина:</label>
+              <select
+                value={disputeForm.dispute_reason}
+                onChange={(e) => handleDisputeFormChange("dispute_reason", e.target.value)}
+              >
+                {disputeReasonOptions.map(option => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="form-group">
+              <label>Ссылка на доказательство:</label>
+              <input
+                type="text"
+                value={disputeForm.proof_url}
+                onChange={(e) => handleDisputeFormChange("proof_url", e.target.value)}
+                placeholder="URL доказательства"
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Время жизни диспута (минуты):</label>
+              <input
+                type="number"
+                value={disputeForm.ttl}
+                onChange={(e) => handleDisputeFormChange("ttl", e.target.value.replace(/\D/g, ""))}
+                min="1"
+              />
+            </div>
+
+            <div className="modal-actions">
+              <button className="confirm-btn" onClick={handleCreateDispute}>
+                Открыть диспут
+              </button>
+              <button className="cancel-btn" onClick={closeDisputeModal}>
+                Отмена
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

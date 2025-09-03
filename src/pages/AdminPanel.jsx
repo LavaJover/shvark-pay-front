@@ -46,6 +46,9 @@ const AdminPanel = () => {
             <li className={location.pathname.includes('/admin/traders-stats') ? 'active' : ''}>
               <Link to="/admin/traders-stats" onClick={() => setMenuOpen(false)}>Статистика трейдеров</Link>
             </li>
+            <li className={location.pathname.includes('/admin/requisites') ? 'active' : ''}>
+              <Link to="/admin/requisites" onClick={() => setMenuOpen(false)}>Реквизиты</Link>
+            </li>
           </ul>
         </nav>
       </aside>
