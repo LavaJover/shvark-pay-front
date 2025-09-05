@@ -196,13 +196,14 @@
     .orders-table th,
     .orders-table td,
     .orders-table tr {
-      display: block;
+      display: contents;
     }
   
     .orders-table thead tr {
       position: absolute;
       top: -9999px;
       left: -9999px;
+      display: none;
     }
   
     .orders-table tr {
@@ -221,7 +222,7 @@
     }
   
     .orders-table td::before {
-      position: absolute;
+      /* position: absolute; */
       top: 10px;
       left: 15px;
       width: 45%;
@@ -231,6 +232,7 @@
       text-align: left;
       color: #666;
       content: attr(data-label);
+      display: none;
     }
   }
   

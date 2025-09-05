@@ -104,14 +104,14 @@
       align-items: center;
     }
   
-    .orders-container table,
+    /* .orders-container table,
     .orders-container thead,
     .orders-container tbody,
     .orders-container th,
     .orders-container td,
     .orders-container tr {
       display: block;
-    }
+    } */
   
     .orders-container thead {
       display: none;
@@ -133,7 +133,7 @@
     .orders-container td::before {
       content: attr(data-label);
       font-weight: bold;
-      display: block;
+      /* display: block; */
       margin-bottom: 0.25rem;
       color: #555;
     }

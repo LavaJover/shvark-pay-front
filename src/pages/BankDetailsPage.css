@@ -59,7 +59,7 @@
     background-color: #5a6268;
   }
   
-
+/* 
   @media (max-width: 768px) {
     .bank-details-table-container table,
     .bank-details-table-container thead,
@@ -68,7 +68,7 @@
     .bank-details-table-container td,
     .bank-details-table-container tr {
       display: block;
-    }
+    } */
   
     .bank-details-table-container thead {
       display: none;
@@ -80,6 +80,7 @@
       border-radius: 6px;
       background-color: #fff;
       padding: 1rem;
+      display: block
     }
   
     .bank-details-table-container td {
@@ -102,6 +103,6 @@
     .bank-details-header button {
       width: 100%;
     }
-  }
+  
 
   
